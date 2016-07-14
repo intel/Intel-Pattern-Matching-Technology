@@ -19,8 +19,8 @@
 
 
 
-#include "QSE_PMA.h"
-QSE_PMA CuriePME;
+#include "Intel_PMT.h"
+Intel_PMT CuriePME;
 
 #include <SerialFlash.h>
 #include <SPI.h>
@@ -197,7 +197,7 @@ void restoreNetworkKnowledge ( void )
   int32_t fileNeuronCount = 0;
 
   uint16_t savedState = CuriePME.beginRestoreMode();
-  QSE_PMA::neuronData neuronData;
+  Intel_PMT::neuronData neuronData;
 
 
   

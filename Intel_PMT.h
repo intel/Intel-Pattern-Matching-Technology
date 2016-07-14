@@ -24,7 +24,7 @@ extern "C"
 
 
 
-class QSE_PMA
+class Intel_PMT
 {
 
 
@@ -64,7 +64,7 @@ public:
 
 	
 	// constructor - the semantic is to construct, then initialise with a begin() method	
-	QSE_PMA();
+	Intel_PMT();
 	
 	// Default initializer 
 	void begin(void);

@@ -20,8 +20,8 @@
 // This Example illustrates how to train the Intel(r) Curie(tm) pattern matching engine with 
 // example data and how to tell how many neurons are committed in the network.
 
-#include "QSE_PMA.h"
-QSE_PMA CuriePME;
+#include "Intel_PMT.h"
+Intel_PMT CuriePME;
 
 void setup() {
   // put your setup code here, to run once:

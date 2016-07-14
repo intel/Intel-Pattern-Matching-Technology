@@ -20,8 +20,8 @@
 // This Example illustrates how to train the Intel(r) Curie(tm) pattern matching engine with 
 // example data and how to tell how many neurons are committed in the network.
 
-#include "QSE_PMA.h"
-QSE_PMA CuriePME;
+#include "Intel_PMT.h"
+Intel_PMT CuriePME;
 
 #include <SerialFlash.h>
 #include <SPI.h>
@@ -198,7 +198,7 @@ void saveNetworkKnowledge ( void )
 
 
   uint16_t savedState = CuriePME.beginSaveMode();
-  QSE_PMA::neuronData neuronData;
+  Intel_PMT::neuronData neuronData;
   uint32_t fileSize = 128 * sizeof(neuronData);
 
   Serial.print( "File Size to save is = ");

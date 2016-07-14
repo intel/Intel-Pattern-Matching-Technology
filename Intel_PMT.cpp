@@ -17,17 +17,17 @@
 
 */
 
-#include "QSE_PMA.h"
+#include "Intel_PMT.h"
 
 
 // default constructor use a begin() method to initialize the instance 
-QSE_PMA::QSE_PMA()
+Intel_PMT::Intel_PMT()
 {
 
 }	
 	
 // Default initializer 
-void QSE_PMA::begin(void)
+void Intel_PMT::begin(void)
 {
 
 	uint16_t savedNSR = regRead16( NSR );
@@ -46,7 +46,7 @@ void QSE_PMA::begin(void)
 }
 
 // custom initializer for the neural network
-void QSE_PMA::begin( 	uint16_t global_context,
+void Intel_PMT::begin( 	uint16_t global_context,
 			PATTERN_MATCHING_DISTANCE_MODE distance_mode,
 			PATTERN_MATCHING_CLASSIFICATION_MODE classification_mode,
 			uint16_t minAIF, uint16_t maxAIF )
@@ -62,7 +62,7 @@ void QSE_PMA::begin( 	uint16_t global_context,
 
 }
 
-void QSE_PMA::configure( 	uint16_t global_context,
+void Intel_PMT::configure( 	uint16_t global_context,
 			PATTERN_MATCHING_DISTANCE_MODE distance_mode,
 			PATTERN_MATCHING_CLASSIFICATION_MODE classification_mode,
 			uint16_t minAIF, uint16_t maxAIF )
@@ -77,14 +77,14 @@ void QSE_PMA::configure( 	uint16_t global_context,
 
 
 // clear all commits in the network and make it ready to learn			
-void QSE_PMA::forget( void )
+void Intel_PMT::forget( void )
 {
 	regWrite16( FORGET_NCOUNT, 0 );
 }
 	
 // mark --learn and classify--	
 	
-uint16_t QSE_PMA::learn(uint8_t *pattern_vector, int32_t vector_length, uint8_t category)
+uint16_t Intel_PMT::learn(uint8_t *pattern_vector, int32_t vector_length, uint8_t category)
 {
 	if( vector_length > MaxVectorSize )
 		vector_length = MaxVectorSize;
@@ -102,7 +102,7 @@ uint16_t QSE_PMA::learn(uint8_t *pattern_vector, int32_t vector_length, uint8_t 
 }	
 	
 	
-uint16_t QSE_PMA::classify(uint8_t *pattern_vector, int32_t vector_length)
+uint16_t Intel_PMT::classify(uint8_t *pattern_vector, int32_t vector_length)
 {
 
 
@@ -123,7 +123,7 @@ uint16_t QSE_PMA::classify(uint8_t *pattern_vector, int32_t vector_length)
 
 // write vector is used for kNN recognition and does not alter 
 // the CAT register, which moves the chain along.
-uint16_t QSE_PMA::writeVector(uint8_t *pattern_vector, int32_t vector_length)
+uint16_t Intel_PMT::writeVector(uint8_t *pattern_vector, int32_t vector_length)
 {
 
 
@@ -144,7 +144,7 @@ uint16_t QSE_PMA::writeVector(uint8_t *pattern_vector, int32_t vector_length)
 
 
 // retrieve the data of a specific neuron element by ID, between 1 and 128. 
-uint16_t QSE_PMA::readNeuron( int32_t neuronID, neuronData& data_array)
+uint16_t Intel_PMT::readNeuron( int32_t neuronID, neuronData& data_array)
 {
 	
 	uint16_t dummy = 0;
@@ -183,7 +183,7 @@ uint16_t QSE_PMA::readNeuron( int32_t neuronID, neuronData& data_array)
 // mark --save and restore network--
 
 // save and restore knowledge
-uint16_t QSE_PMA::beginSaveMode( void )
+uint16_t Intel_PMT::beginSaveMode( void )
 {
 
 	uint16_t savedNetMode = regRead16(NSR);
@@ -199,7 +199,7 @@ uint16_t QSE_PMA::beginSaveMode( void )
 }
 
 // pass the function a structure to save data into 
-uint16_t QSE_PMA::iterateNeuronsToSave(neuronData& array )
+uint16_t Intel_PMT::iterateNeuronsToSave(neuronData& array )
 {
 
 	array.context =  regRead16( NCR );
@@ -216,7 +216,7 @@ uint16_t QSE_PMA::iterateNeuronsToSave(neuronData& array )
 
 }
 
-uint16_t QSE_PMA::endSaveMode(void)
+uint16_t Intel_PMT::endSaveMode(void)
 {
 	// set save/restore mode in the NSR
 	regWrite16( NSR,  0);
@@ -224,7 +224,7 @@ uint16_t QSE_PMA::endSaveMode(void)
 
 }
 
-uint16_t QSE_PMA::endSaveMode(uint16_t savedNetMode)
+uint16_t Intel_PMT::endSaveMode(uint16_t savedNetMode)
 {
 	//restore the network to how we found it. 
 	regWrite16( NSR, ( savedNetMode &  ~NSR_NET_MODE));
@@ -233,7 +233,7 @@ uint16_t QSE_PMA::endSaveMode(uint16_t savedNetMode)
 }
 
 
-uint16_t QSE_PMA::beginRestoreMode( void )
+uint16_t Intel_PMT::beginRestoreMode( void )
 {
 
 	uint16_t savedNetMode = regRead16(NSR);
@@ -248,7 +248,7 @@ uint16_t QSE_PMA::beginRestoreMode( void )
 	return savedNetMode;  
 
 }
-uint16_t QSE_PMA::iterateNeuronsToRestore(neuronData& array  )
+uint16_t Intel_PMT::iterateNeuronsToRestore(neuronData& array  )
 {
 	regWrite16( NCR, array.context  );
 	for( int i=0; i < SaveRestoreSize; i++)
@@ -265,14 +265,14 @@ uint16_t QSE_PMA::iterateNeuronsToRestore(neuronData& array  )
 
 }
 
-uint16_t QSE_PMA::endRestoreMode(void)
+uint16_t Intel_PMT::endRestoreMode(void)
 {
 	// set save/restore mode in the NSR
 	regWrite16( NSR,  0);
 	return 0;
 }
 
-uint16_t QSE_PMA::endRestoreMode(uint16_t savedNetMode)
+uint16_t Intel_PMT::endRestoreMode(uint16_t savedNetMode)
 {
 	//restore the network to how we found it. 
 	regWrite16( NSR, ( savedNetMode &  ~NSR_NET_MODE));
@@ -282,8 +282,8 @@ uint16_t QSE_PMA::endRestoreMode(uint16_t savedNetMode)
 
 // mark -- getter and setters--
 
-QSE_PMA::PATTERN_MATCHING_DISTANCE_MODE // L1 or LSup
-QSE_PMA::getDistanceMode(void)
+Intel_PMT::PATTERN_MATCHING_DISTANCE_MODE // L1 or LSup
+Intel_PMT::getDistanceMode(void)
 {
 	
 	if (  NCR_NORM & regRead16( NCR )  )
@@ -296,7 +296,7 @@ QSE_PMA::getDistanceMode(void)
 
 }
 void 
-QSE_PMA::setDistanceMode( QSE_PMA::PATTERN_MATCHING_DISTANCE_MODE mode) // L1 or LSup
+Intel_PMT::setDistanceMode( Intel_PMT::PATTERN_MATCHING_DISTANCE_MODE mode) // L1 or LSup
 {
 	uint16_t mask = NCR_NORM;
 
@@ -309,14 +309,14 @@ QSE_PMA::setDistanceMode( QSE_PMA::PATTERN_MATCHING_DISTANCE_MODE mode) // L1 or
 
 }
 uint16_t 
-QSE_PMA::getGlobalContext( void )
+Intel_PMT::getGlobalContext( void )
 {
 
 	return ( NCR_CONTEXT & regRead16( NCR ) );
 
 }
 void 
-QSE_PMA::setGlobalContext( uint16_t context ) // valid range is 1-127
+Intel_PMT::setGlobalContext( uint16_t context ) // valid range is 1-127
 {
 
 	uint16_t ncrMask = ~NCR_CONTEXT & regRead16( NCR );
@@ -329,15 +329,15 @@ QSE_PMA::setGlobalContext( uint16_t context ) // valid range is 1-127
 // It should not be called between the beginSaveMode() and endSaveMode() or between 
 // beginRestoreMode() and endRestoreMode()
 uint16_t 
-QSE_PMA::getCommittedCount( void )
+Intel_PMT::getCommittedCount( void )
 {
 
 	return (getFORGET_NCOUNT() & 0xff );
 
 } 
 
-QSE_PMA::PATTERN_MATCHING_CLASSIFICATION_MODE 
-QSE_PMA::getClassifierMode( void ) // RBF or KNN
+Intel_PMT::PATTERN_MATCHING_CLASSIFICATION_MODE 
+Intel_PMT::getClassifierMode( void ) // RBF or KNN
 {
 	if( regRead16( NSR ) & NSR_CLASS_MODE )
 		return KNN_Mode;
@@ -347,7 +347,7 @@ QSE_PMA::getClassifierMode( void ) // RBF or KNN
 }
 
 void 
-QSE_PMA::setClassifierMode( QSE_PMA::PATTERN_MATCHING_CLASSIFICATION_MODE mode )
+Intel_PMT::setClassifierMode( Intel_PMT::PATTERN_MATCHING_CLASSIFICATION_MODE mode )
 {
 
 	uint16_t mask = regRead16(NSR );
@@ -366,79 +366,79 @@ QSE_PMA::setClassifierMode( QSE_PMA::PATTERN_MATCHING_CLASSIFICATION_MODE mode )
 
 // mark --register access--
 	//getter and setters
- uint16_t QSE_PMA::getNCR( void )
+ uint16_t Intel_PMT::getNCR( void )
 {
 
 	return regRead16(NCR);
 
 } 
- uint16_t QSE_PMA::getCOMP( void )
+ uint16_t Intel_PMT::getCOMP( void )
 {
 
 	return regRead16(COMP);
 
 }
- uint16_t QSE_PMA::getLCOMP( void )
+ uint16_t Intel_PMT::getLCOMP( void )
 {
 
 	return regRead16(LCOMP);
 
 }
- uint16_t QSE_PMA::getIDX_DIST( void )
+ uint16_t Intel_PMT::getIDX_DIST( void )
 {
 
 	return regRead16(IDX_DIST);
 
 }
- uint16_t QSE_PMA::getCAT( void )
+ uint16_t Intel_PMT::getCAT( void )
 {
 
 	return regRead16(CAT);
 
 }
- uint16_t QSE_PMA::getAIF( void )
+ uint16_t Intel_PMT::getAIF( void )
 {
 
 	return regRead16(AIF);
 
 }
- uint16_t QSE_PMA::getMINIF( void )
+ uint16_t Intel_PMT::getMINIF( void )
 {
 
 	return regRead16(MINIF);
 
 }
- uint16_t QSE_PMA::getMAXIF( void )
+ uint16_t Intel_PMT::getMAXIF( void )
 {
 
 	return regRead16(MAXIF);
 
 }
- uint16_t QSE_PMA::getNID( void )
+ uint16_t Intel_PMT::getNID( void )
 {
 
 	return regRead16(NID);
 
 }
- uint16_t QSE_PMA::getGCR( void )
+ uint16_t Intel_PMT::getGCR( void )
 {
 
 	return regRead16(GCR);
 
 }
- uint16_t QSE_PMA::getRSTCHAIN( void )
+ uint16_t Intel_PMT::getRSTCHAIN( void )
 {
 
 	return regRead16(RSTCHAIN);
 
 }
- uint16_t QSE_PMA::getNSR( void )
+ uint16_t Intel_PMT::getNSR( void )
 {
 
 	return regRead16(NSR);
 
 }
- uint16_t QSE_PMA::getFORGET_NCOUNT( void )
+ uint16_t Intel_PMT::getFORGET_NCOUNT( void )
 {
 
 	return regRead16(FORGET_NCOUNT);
