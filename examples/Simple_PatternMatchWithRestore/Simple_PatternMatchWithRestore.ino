@@ -249,7 +249,7 @@ void restoreNetworkKnowledge ( void )
 
         Serial.print( "\n");
 
-        CuriePME.interateNeuronsToRestore( neuronData );
+        CuriePME.iterateNeuronsToRestore( neuronData );
      
     }
     

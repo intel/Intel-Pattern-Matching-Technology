@@ -248,7 +248,7 @@ uint16_t QSE_PMA::beginRestoreMode( void )
 	return savedNetMode;  
 
 }
-uint16_t QSE_PMA::interateNeuronsToRestore(neuronData& array  )
+uint16_t QSE_PMA::iterateNeuronsToRestore(neuronData& array  )
 {
 	regWrite16( NCR, array.context  );
 	for( int i=0; i < SaveRestoreSize; i++)

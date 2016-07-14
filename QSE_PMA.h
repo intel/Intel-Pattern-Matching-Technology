@@ -100,7 +100,7 @@ public:
 	uint16_t endSaveMode(uint16_t);   
 	
 	uint16_t beginRestoreMode( void );// passes back the contents of the NSR register
-	uint16_t interateNeuronsToRestore( neuronData& data_array ); 
+	uint16_t iterateNeuronsToRestore( neuronData& data_array ); 
 	uint16_t endRestoreMode(void);
 	// you can optionally restore the NSR register by passing the value from
 	// from beginRestoreMode() you may not want this when restoring a network. 
