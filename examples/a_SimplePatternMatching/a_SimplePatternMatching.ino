@@ -6,7 +6,7 @@
 // This Example illustrates how to train the Intel(r) Curie(tm) pattern matching engine with 
 // example data and how to tell how many neurons are committed in the network.
 
-#include "Intel_PMT.h"
+#include "CuriePME.h"
 Intel_PMT CuriePME;
 
 void setup() {
@@ -18,9 +18,6 @@ void setup() {
   CuriePME.begin();
 
   trainNeuronsWithData();
-
-
-
 }
 
 void loop() {
@@ -89,8 +86,6 @@ void trainNeuronsWithData( void )
   Serial.print("Neurons committed before learning = ");
   Serial.print( CuriePME.getCommittedCount());
   Serial.print("\n");
-
-
  
   uint8_t vector[3];
 
@@ -101,7 +96,6 @@ void trainNeuronsWithData( void )
   // give the data, the number of elements and the category it belongs to. 
   CuriePME.learn(vector, 3, 1);
   printTraining(vector, 3, 1);
-
 
   //Category 2
   vector[0] = 18;
@@ -145,13 +139,10 @@ void trainNeuronsWithData( void )
 
   Serial.print("Now enter 3 numbers, between 0 and 255, separated by a comma. \n");
   Serial.print("Like 11, 24, 29 \n");
-
-
 }
 
 void printTraining ( uint8_t* vector, int length, int category)
 {
-
   Serial.print("Category ");
   Serial.print( category );
   Serial.print(" trained with: ");
@@ -161,8 +152,6 @@ void printTraining ( uint8_t* vector, int length, int category)
   Serial.print(", ");
   Serial.print( vector[2]);
   Serial.print("\n \n");
-
- 
 }
 
 /*
@@ -181,4 +170,3 @@ void printTraining ( uint8_t* vector, int length, int category)
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
-

@@ -12,7 +12,7 @@
 */
 
 
-#include "Intel_PMT.h"
+#include "CuriePME.h"
 Intel_PMT CuriePME;
 
 #include <SerialFlash.h>

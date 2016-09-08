@@ -6,7 +6,7 @@
 // This Example illustrates how to train the Intel(r) Curie(tm) pattern matching engine with 
 // example data and how to tell how many neurons are committed in the network.
 
-#include "Intel_PMT.h"
+#include "CuriePME.h"
 Intel_PMT CuriePME;
 
 #include <SerialFlash.h>
