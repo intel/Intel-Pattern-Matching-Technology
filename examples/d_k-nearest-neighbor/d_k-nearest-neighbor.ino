@@ -64,12 +64,7 @@ void loop() {
     CuriePME.writeVector(vector, 3 );
 
     Serial.print("You entered: ");
-    Serial.print( vector[0] );
-    Serial.print(",");
-    Serial.print( vector[1] );
-    Serial.print(",");
-    Serial.print( vector[2] );
-    Serial.print("\n");
+    printVector(vector);
     Serial.print("Now searching k-nearest neighbor\n");
 
     while(1) {
@@ -88,6 +83,15 @@ void loop() {
   }
 }
 
+void printVector (uint8_t vector[])
+{
+    Serial.print(vector[0]);
+    Serial.print(",");
+    Serial.print(vector[1]);
+    Serial.print(",");
+    Serial.println(vector[2]);
+}
+
 bool isLineEnding (char c)
 {
   return (c == '\r' || c == '\n') ? true : false;
@@ -104,69 +108,37 @@ void trainNeuronsWithData( void )
   Serial.print( CuriePME.getCommittedCount());
   Serial.print("\n");
 
-  uint8_t vector[3];
-
-  //Category 1
-  vector[0] = 11;
-  vector[1] = 24;
-  vector[2] = 29;
-  // give the data, the number of elements and the category it belongs to.
-  CuriePME.learn(vector, 3, 1);
-  printTraining(vector, 3, 1);
-
-  //Category 2
-  vector[0] = 18;
-  vector[1] = 75;
-  vector[2] = 38;
-  CuriePME.learn(vector, 3, 2);
-  printTraining(vector, 3, 2);
-
-  //Category 3
-  vector[0] = 2;
-  vector[1] = 56;
-  vector[2] = 35;
-  CuriePME.learn(vector, 3, 3);
-  printTraining(vector, 3, 3);
-
-  //Category 4
-  vector[0] = 111;
-  vector[1] = 224;
-  vector[2] = 229;
-  CuriePME.learn((uint8_t *)vector, 3, 4);
-  printTraining(vector, 3, 4);
-
-  // Category 5
-  vector[0] = 128;
-  vector[1] = 200;
-  vector[2] = 255;
-  CuriePME.learn((uint8_t *)vector, 3, 5);
-  printTraining(vector, 3, 5);
-
-  // Category 6
-  vector[0] = 99;
-  vector[1] = 180;
-  vector[2] = 201;
-  CuriePME.learn((uint8_t *)vector, 3, 6);
-  printTraining(vector, 3, 6);
+  commitThreeSamples(1, 11, 24, 29);    // Category 1
+  commitThreeSamples(2, 18, 75, 38);    // Category 2
+  commitThreeSamples(3, 2, 56, 35);     // Category 3
+  commitThreeSamples(4, 111, 224, 229); // Category 4
+  commitThreeSamples(5, 128, 200, 255); // Category 5
+  commitThreeSamples(6, 99, 180, 201);  // Category 6
 
   Serial.print("Neurons committed after learning = ");
   Serial.print( CuriePME.getCommittedCount());
   Serial.print("\n");
+
+  Serial.print("Now enter 3 numbers, between 0 and 255, separated by a comma. \n");
+  Serial.print("Like 11, 24, 29 \n");
 }
 
-void printTraining ( uint8_t* vector, int length, int category)
+void commitThreeSamples (int category, uint8_t s1, uint8_t s2, uint8_t s3)
 {
+  uint8_t vector[3];
+
+  vector[0] = s1;
+  vector[1] = s2;
+  vector[2] = s3;
+
+  // give the data, the number of elements and the category it belongs to.
+  CuriePME.learn(vector, 3, category);
+
   Serial.print("Category ");
   Serial.print( category );
   Serial.print(" trained with: ");
-  Serial.print( vector[0]);
-  Serial.print(", ");
-  Serial.print( vector[1]);
-  Serial.print(", ");
-  Serial.print( vector[2]);
-  Serial.print("\n \n");
+  printVector(vector);
 }
-
 
 void restoreNetworkKnowledge ( void )
 {

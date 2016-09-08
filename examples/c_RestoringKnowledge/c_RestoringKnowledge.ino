@@ -62,12 +62,7 @@ void loop() {
     int answer = CuriePME.classify(vector, 3 );
 
     Serial.print("You entered: ");
-    Serial.print( vector[0] );
-    Serial.print(",");
-    Serial.print( vector[1] );
-    Serial.print(",");
-    Serial.print( vector[2] );
-    Serial.print("\n");
+    printVector(vector);
 
     if( answer == 0x7FFF ) {
       Serial.print("Which didn't match any of the trained categories.\n");
@@ -78,6 +73,15 @@ void loop() {
       Serial.print("\n");
     }
   }
+}
+
+void printVector (uint8_t vector[])
+{
+    Serial.print(vector[0]);
+    Serial.print(",");
+    Serial.print(vector[1]);
+    Serial.print(",");
+    Serial.println(vector[2]);
 }
 
 bool isLineEnding (char c)
