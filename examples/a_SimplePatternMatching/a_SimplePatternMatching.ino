@@ -7,7 +7,6 @@
 // example data and how to tell how many neurons are committed in the network.
 
 #include "CuriePME.h"
-Intel_PMT CuriePME;
 
 void setup() {
   // put your setup code here, to run once:

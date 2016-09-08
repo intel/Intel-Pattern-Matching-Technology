@@ -199,4 +199,6 @@ public:
 	}
 };
 
+extern Intel_PMT CuriePME;
+
 #endif

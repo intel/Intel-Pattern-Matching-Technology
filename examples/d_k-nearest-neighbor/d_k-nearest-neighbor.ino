@@ -4,9 +4,7 @@
 */
 
 
-
 #include "CuriePME.h"
-Intel_PMT CuriePME;
 
 #include <SerialFlash.h>
 #include <SPI.h>

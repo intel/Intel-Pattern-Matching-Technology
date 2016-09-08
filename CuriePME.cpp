@@ -19,6 +19,8 @@
 
 #include "CuriePME.h"
 
+Intel_PMT CuriePME;
+
 // default constructor use a begin() method to initialize the instance
 Intel_PMT::Intel_PMT()
 {

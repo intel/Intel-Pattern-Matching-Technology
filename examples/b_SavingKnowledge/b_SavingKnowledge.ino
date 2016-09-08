@@ -7,7 +7,6 @@
 // example data and how to tell how many neurons are committed in the network.
 
 #include "CuriePME.h"
-Intel_PMT CuriePME;
 
 #include <SerialFlash.h>
 #include <SPI.h>
