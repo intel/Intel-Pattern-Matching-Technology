@@ -1,16 +1,12 @@
 /*
    Copyright (c) 2016 Intel Corporation.  All rights reserved.
    See license notice at end of file.
+
+   This example restores the neural network from a file saved in the storage memory
+   on the Arduino/Genuino 101 board that was saved by the previous example sketch.
+   When the network is restored, it is able to use the training learned from prior
+   examples without retraining it. Thus the prior knowledge is restored.
 */
-
-
-/*
-	This example restores the neural network from a file saved in the storage memory
-	on the Arduino/Genuino 101 board that was saved by the previous example sketch.
-	When the network is restored, it is able to use the training learned from prior
-	examples without retraining it. Thus the prior knowledge is restored.
-*/
-
 
 #include "CuriePME.h"
 
@@ -51,32 +47,42 @@ void loop() {
     y = Serial.parseInt();
     z = Serial.parseInt();
 
-    if (Serial.read() == '\n') {
+    // Wait until we see newline or carriage return
+    while (!isLineEnding(Serial.read()));
 
-      vector[0] = constrain(x, 0, 255);
-      vector[1] = constrain(y, 0, 255);
-      vector[2] = constrain(z, 0, 255);
+    // Then wait until we stop seeing then
+    while (isLineEnding(Serial.peek())) {
+      Serial.read();
+    }
 
-      int answer = CuriePME.classify(vector, 3 );
+    vector[0] = constrain(x, 0, 255);
+    vector[1] = constrain(y, 0, 255);
+    vector[2] = constrain(z, 0, 255);
 
-      Serial.print("You entered: ");
-      Serial.print( vector[0] );
-      Serial.print(",");
-      Serial.print( vector[1] );
-      Serial.print(",");
-      Serial.print( vector[2] );
+    int answer = CuriePME.classify(vector, 3 );
+
+    Serial.print("You entered: ");
+    Serial.print( vector[0] );
+    Serial.print(",");
+    Serial.print( vector[1] );
+    Serial.print(",");
+    Serial.print( vector[2] );
+    Serial.print("\n");
+
+    if( answer == 0x7FFF ) {
+      Serial.print("Which didn't match any of the trained categories.\n");
+    } else {
+      Serial.print("The closest match to the trained data \n");
+      Serial.print("is category: ");
+      Serial.print( answer );
       Serial.print("\n");
-
-      if( answer == 0x7FFF ) {
-        Serial.print("Which didn't match any of the trained categories.\n");
-      } else {
-        Serial.print("The closest match to the trained data \n");
-        Serial.print("is category: ");
-        Serial.print( answer );
-        Serial.print("\n");
-      }
     }
   }
+}
+
+bool isLineEnding (char c)
+{
+  return (c == '\r' || c == '\n') ? true : false;
 }
 
 // This function reads the file saved by the previous example

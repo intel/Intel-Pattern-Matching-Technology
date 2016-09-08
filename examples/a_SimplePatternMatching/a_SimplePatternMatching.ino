@@ -33,32 +33,42 @@ void loop() {
     y = Serial.parseInt();
     z = Serial.parseInt();
 
-    if (Serial.read() == '\n') {
+    // Wait until we see newline or carriage return
+    while (!isLineEnding(Serial.read()));
 
-      vector[0] = constrain(x, 0, 255);
-      vector[1] = constrain(y, 0, 255);
-      vector[2] = constrain(z, 0, 255);
+    // Then wait until we stop seeing then
+    while (isLineEnding(Serial.peek())) {
+      Serial.read();
+    }
 
-      int answer = CuriePME.classify(vector, 3 );
+    vector[0] = constrain(x, 0, 255);
+    vector[1] = constrain(y, 0, 255);
+    vector[2] = constrain(z, 0, 255);
 
-      Serial.print("You entered: ");
-      Serial.print( vector[0] );
-      Serial.print(",");
-      Serial.print( vector[1] );
-      Serial.print(",");
-      Serial.print( vector[2] );
+    int answer = CuriePME.classify(vector, 3 );
+
+    Serial.print("You entered: ");
+    Serial.print( vector[0] );
+    Serial.print(",");
+    Serial.print( vector[1] );
+    Serial.print(",");
+    Serial.print( vector[2] );
+    Serial.print("\n");
+
+    if( answer == 0x7FFF ) {
+      Serial.print("Which didn't match any of the trained categories.\n");
+    } else {
+      Serial.print("The closest match to the trained data \n");
+      Serial.print("is category: ");
+      Serial.print( answer );
       Serial.print("\n");
-
-      if( answer == 0x7FFF ) {
-        Serial.print("Which didn't match any of the trained categories.\n");
-      } else {
-        Serial.print("The closest match to the trained data \n");
-        Serial.print("is category: ");
-        Serial.print( answer );
-        Serial.print("\n");
-      }
     }
   }
+}
+
+bool isLineEnding (char c)
+{
+  return (c == '\r' || c == '\n') ? true : false;
 }
 
 // The pattern matching engine will commit a new neuron for each new category.

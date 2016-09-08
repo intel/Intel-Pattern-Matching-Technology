@@ -3,7 +3,6 @@
    See license notice at end of file.
 */
 
-
 #include "CuriePME.h"
 
 #include <SerialFlash.h>
@@ -50,41 +49,49 @@ void loop() {
     y = Serial.parseInt();
     z = Serial.parseInt();
 
-    if (Serial.read() == '\n') {
+    // Wait until we see newline or carriage return
+    while (!isLineEnding(Serial.read()));
 
-      vector[0] = constrain(x, 0, 255);
-      vector[1] = constrain(y, 0, 255);
-      vector[2] = constrain(z, 0, 255);
+    // Then wait until we stop seeing then
+    while (isLineEnding(Serial.peek())) {
+      Serial.read();
+    }
 
-      CuriePME.writeVector(vector, 3 );
+    vector[0] = constrain(x, 0, 255);
+    vector[1] = constrain(y, 0, 255);
+    vector[2] = constrain(z, 0, 255);
 
-      Serial.print("You entered: ");
-      Serial.print( vector[0] );
-      Serial.print(",");
-      Serial.print( vector[1] );
-      Serial.print(",");
-      Serial.print( vector[2] );
-      Serial.print("\n");
-      Serial.print("Now searching k-nearest neighbor\n");
+    CuriePME.writeVector(vector, 3 );
 
-      while(1) {
-        uint16_t distance = CuriePME.getIDX_DIST();
-        uint16_t category = CuriePME.getCAT();
+    Serial.print("You entered: ");
+    Serial.print( vector[0] );
+    Serial.print(",");
+    Serial.print( vector[1] );
+    Serial.print(",");
+    Serial.print( vector[2] );
+    Serial.print("\n");
+    Serial.print("Now searching k-nearest neighbor\n");
 
-        if(category == 0 || category > 127)
+    while(1) {
+      uint16_t distance = CuriePME.getIDX_DIST();
+      uint16_t category = CuriePME.getCAT();
+
+      if(category == 0 || category > 127)
               break;
 
-        Serial.print( "Distance = ");
-        Serial.print( distance );
-        Serial.print("  Category = ");
-        Serial.print(category);
-        Serial.print("\n");
-      }
+      Serial.print( "Distance = ");
+      Serial.print( distance );
+      Serial.print("  Category = ");
+      Serial.print(category);
+      Serial.print("\n");
     }
   }
 }
 
-
+bool isLineEnding (char c)
+{
+  return (c == '\r' || c == '\n') ? true : false;
+}
 
 // The pattern matching engine will commit a new neuron for each new category.
 // Adding additional data to a category may or may not commit more neurons.
