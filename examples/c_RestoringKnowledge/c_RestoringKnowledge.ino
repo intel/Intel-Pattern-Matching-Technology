@@ -5,10 +5,10 @@
 
 
 /*
-	This example restores the neural network from a file saved in the storage memory 
-	on the Arduino/Genuino 101 board that was saved by the previous example sketch. 
-	When the network is restored, it is able to use the training learned from prior 
-	examples without retraining it. Thus the prior knowledge is restored. 
+	This example restores the neural network from a file saved in the storage memory
+	on the Arduino/Genuino 101 board that was saved by the previous example sketch.
+	When the network is restored, it is able to use the training learned from prior
+	examples without retraining it. Thus the prior knowledge is restored.
 */
 
 
@@ -27,7 +27,7 @@ void setup() {
   // initialize the engine
   CuriePME.begin();
 
- // Init. SPI Flash chip
+  // Init. SPI Flash chip
   if (!SerialFlash.begin(FlashChipSelect)) {
     Serial.println("Unable to access SPI Flash chip");
   }
@@ -36,61 +36,53 @@ void setup() {
 
   Serial.print("\n Now enter 3 numbers, between 0 and 255, separated by a comma. \n");
   Serial.print("Like 11, 24, 29 \n");
-
-
 }
 
 void loop() {
-    
-    uint8_t vector[3];    
-    // now we'll classify some unknown data and let the 
-    // engine decide which pattern of 3 numbers most closely match
-    // what it has been taught, or if they don't match anything it knows about.
-    
-    
-    int x, y, z;
-    while (Serial.available() > 0) {
-      
-      x = Serial.parseInt();
-      y = Serial.parseInt();
-      z = Serial.parseInt();
 
-      if (Serial.read() == '\n') {
+  uint8_t vector[3];
+  // now we'll classify some unknown data and let the
+  // engine decide which pattern of 3 numbers most closely match
+  // what it has been taught, or if they don't match anything it knows about.
 
-        vector[0] = constrain(x, 0, 255);
-        vector[1] = constrain(y, 0, 255);
-        vector[2] = constrain(z, 0, 255);
+  int x, y, z;
+  while (Serial.available() > 0) {
 
-        int answer = CuriePME.classify(vector, 3 );
-        
-        Serial.print("You entered: ");
-        Serial.print( vector[0] );
-        Serial.print(",");
-        Serial.print( vector[1] );
-        Serial.print(",");
-        Serial.print( vector[2] );
-        Serial.print("\n");
+    x = Serial.parseInt();
+    y = Serial.parseInt();
+    z = Serial.parseInt();
 
-        if( answer == 0x7FFF )
-        { 
-          Serial.print("Which didn't match any of the trained categories.\n");
-        } else {
+    if (Serial.read() == '\n') {
+
+      vector[0] = constrain(x, 0, 255);
+      vector[1] = constrain(y, 0, 255);
+      vector[2] = constrain(z, 0, 255);
+
+      int answer = CuriePME.classify(vector, 3 );
+
+      Serial.print("You entered: ");
+      Serial.print( vector[0] );
+      Serial.print(",");
+      Serial.print( vector[1] );
+      Serial.print(",");
+      Serial.print( vector[2] );
+      Serial.print("\n");
+
+      if( answer == 0x7FFF ) {
+        Serial.print("Which didn't match any of the trained categories.\n");
+      } else {
         Serial.print("The closest match to the trained data \n");
         Serial.print("is category: ");
         Serial.print( answer );
         Serial.print("\n");
-
-        }
-      
       }
-    
     }
-
+  }
 }
 
 // This function reads the file saved by the previous example
-// The file contains all the data that was learned, then saved before. 
-// Once the network is restored, it is able to classify patterns again without 
+// The file contains all the data that was learned, then saved before.
+// Once the network is restored, it is able to classify patterns again without
 // having to be retrained.
 
 void restoreNetworkKnowledge ( void )
@@ -104,61 +96,53 @@ void restoreNetworkKnowledge ( void )
 
 	// Open the file and write test data
   file = SerialFlash.open(filename);
-  if( file )
-  {
-    // iterate over the network and save the data. 
-    while( 1 )
-    {
 
-        
-        Serial.print("Reading Neuron: ");
+  if (file) {
+    // iterate over the network and save the data.
+    while(1) {
+      Serial.print("Reading Neuron: ");
 
-        uint16_t neuronFields[4];
-        file.read( (void*) neuronFields, 8);
-        file.read( (void*) neuronData.vector, 128 );
+      uint16_t neuronFields[4];
+      file.read( (void*) neuronFields, 8);
+      file.read( (void*) neuronData.vector, 128 );
 
-        neuronData.context = neuronFields[0] ;
-        neuronData.influence = neuronFields[1] ;
-        neuronData.minInfluence = neuronFields[2] ;
-        neuronData.category = neuronFields[3];
+      neuronData.context = neuronFields[0] ;
+      neuronData.influence = neuronFields[1] ;
+      neuronData.minInfluence = neuronFields[2] ;
+      neuronData.category = neuronFields[3];
 
-        if( neuronFields[0] == 0
-            || neuronFields[0] > 127 )
-            break;
+      if (neuronFields[0] == 0 || neuronFields[0] > 127)
+        break;
 
-        fileNeuronCount++;
+      fileNeuronCount++;
 
-		// this part just prints each neuron as it is restored, 
-		// so you can see what is happening.	        
-        Serial.print(fileNeuronCount);
-        Serial.print("\n");
+      // this part just prints each neuron as it is restored,
+      // so you can see what is happening.
+      Serial.print(fileNeuronCount);
+      Serial.print("\n");
 
-        Serial.print( neuronFields[0] );
-        Serial.print( "\t");
-        Serial.print( neuronFields[1] );
-        Serial.print( "\t");
-        Serial.print( neuronFields[2] );
-        Serial.print( "\t");
-        Serial.print( neuronFields[3] );
-        Serial.print( "\t");        
-        
-        Serial.print( neuronData.vector[0] );
-        Serial.print( "\t");        
-        Serial.print( neuronData.vector[1] );
-        Serial.print( "\t");        
-        Serial.print( neuronData.vector[2] );
-       
+      Serial.print( neuronFields[0] );
+      Serial.print( "\t");
+      Serial.print( neuronFields[1] );
+      Serial.print( "\t");
+      Serial.print( neuronFields[2] );
+      Serial.print( "\t");
+      Serial.print( neuronFields[3] );
+      Serial.print( "\t");
 
-        Serial.print( "\n");
+      Serial.print( neuronData.vector[0] );
+      Serial.print( "\t");
+      Serial.print( neuronData.vector[1] );
+      Serial.print( "\t");
+      Serial.print( neuronData.vector[2] );
 
-        CuriePME.iterateNeuronsToRestore( neuronData );
-     
+      Serial.print( "\n");
+      CuriePME.iterateNeuronsToRestore( neuronData );
     }
-    
   }
+
   CuriePME.endRestoreMode(savedState);
   Serial.print("Knowledge Set Restored. \n");
-
 }
 
 
@@ -178,4 +162,3 @@ void restoreNetworkKnowledge ( void )
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
-

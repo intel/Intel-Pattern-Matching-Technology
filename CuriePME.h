@@ -17,12 +17,13 @@
 
 */
 
-extern "C" 
+#ifndef _CURIE_PME_H_
+#define _CURIE_PME_H_
+
+extern "C"
 {
   #include <stdint.h>
 }
-
-
 
 class Intel_PMT
 {
@@ -35,21 +36,18 @@ public:
 	static const int32_t LastNeuronID = 128;
 	static const int32_t MaxNeurons = 128;
 	static const int32_t SaveRestoreSize = 128;
-	
-	
+
 	enum PATTERN_MATCHING_CLASSIFICATION_MODE
 	{
 		RBF_Mode = 0,
 		KNN_Mode = 1
 	} ;
 
-
 	enum PATTERN_MATCHING_DISTANCE_MODE
 	{
 		L1_Distance = 0,
 		LSUP_Distance = 1
 	} ;
-	
 
 	typedef struct neuronData
 	{
@@ -57,16 +55,15 @@ public:
 		uint16_t  influence;
 		uint16_t  minInfluence;
 		uint16_t  category;
-		
+
 		uint8_t   vector[SaveRestoreSize];
-		
+
 	} neuronData;
 
-	
-	// constructor - the semantic is to construct, then initialise with a begin() method	
+	// constructor - the semantic is to construct, then initialise with a begin() method
 	Intel_PMT();
-	
-	// Default initializer 
+
+	// Default initializer
 	void begin(void);
 
 	// custom initializer for the neural network
@@ -74,63 +71,53 @@ public:
 			PATTERN_MATCHING_DISTANCE_MODE distance_mode,
 			PATTERN_MATCHING_CLASSIFICATION_MODE classification_mode,
 			uint16_t minAIF, uint16_t maxAIF );
-			
+
 	void forget( void );
-	
+
 	void configure( 	uint16_t global_context,
 			PATTERN_MATCHING_DISTANCE_MODE distance_mode,
 			PATTERN_MATCHING_CLASSIFICATION_MODE classification_mode,
 			uint16_t minAIF, uint16_t maxAIF );
-	
-	
-	
+
 	uint16_t learn(uint8_t *pattern_vector, int32_t vector_length, uint8_t category);
 	uint16_t classify(uint8_t *pattern_vector, int32_t vector_length);
 
-
 	uint16_t readNeuron( int32_t neuronID, neuronData& data_array);
-
 
 	// save and restore knowledge
 	uint16_t beginSaveMode( void );  // passes back the contents of the NSR register
-	uint16_t iterateNeuronsToSave( neuronData& data_array );  
+	uint16_t iterateNeuronsToSave( neuronData& data_array );
 	uint16_t endSaveMode(void);
 	// you can optionally restore the NSR register by passing the value from
 	// from beginSaveMode()
-	uint16_t endSaveMode(uint16_t);   
-	
+	uint16_t endSaveMode(uint16_t);
+
 	uint16_t beginRestoreMode( void );// passes back the contents of the NSR register
-	uint16_t iterateNeuronsToRestore( neuronData& data_array ); 
+	uint16_t iterateNeuronsToRestore( neuronData& data_array );
 	uint16_t endRestoreMode(void);
 	// you can optionally restore the NSR register by passing the value from
-	// from beginRestoreMode() you may not want this when restoring a network. 
+	// from beginRestoreMode() you may not want this when restoring a network.
 	uint16_t endRestoreMode(uint16_t);
-	
-	
-	
-	//getter and setters
 
+	//getter and setters
 	PATTERN_MATCHING_DISTANCE_MODE getDistanceMode(void);
 	void setDistanceMode( PATTERN_MATCHING_DISTANCE_MODE mode);
 	uint16_t getGlobalContext( void );
 	void setGlobalContext( uint16_t context ); // valid range is 1-127
 
-	// NOTE: getCommittedCount() will give inaccurate value if the network is in Save/Restore mode. 
-	// It should not be called between the beginSaveMode() and endSaveMode() or between 
+	// NOTE: getCommittedCount() will give inaccurate value if the network is in Save/Restore mode.
+	// It should not be called between the beginSaveMode() and endSaveMode() or between
 	// beginRestoreMode() and endRestoreMode()
-	uint16_t getCommittedCount( void ); 
-	
-	PATTERN_MATCHING_CLASSIFICATION_MODE getClassifierMode( void ); // RBF or KNN
-	void setClassifierMode( PATTERN_MATCHING_CLASSIFICATION_MODE mode );	
+	uint16_t getCommittedCount( void );
 
-	// write vector is used for kNN recognition and does not alter 
+	PATTERN_MATCHING_CLASSIFICATION_MODE getClassifierMode( void ); // RBF or KNN
+	void setClassifierMode( PATTERN_MATCHING_CLASSIFICATION_MODE mode );
+
+	// write vector is used for kNN recognition and does not alter
 	// the CAT register, which moves the chain along.
 	uint16_t writeVector(uint8_t *pattern_vector, int32_t vector_length);
-	
-	
 
-
-// raw register access - not recommended. 
+    // raw register access - not recommended.
 	uint16_t getNCR( void );
 	uint16_t getCOMP( void );
 	uint16_t getLCOMP( void );
@@ -145,8 +132,6 @@ public:
 	uint16_t getNSR( void );
 	uint16_t getFORGET_NCOUNT( void );
 
-
-	
 	protected:
 
 	// base address of the pattern matching accelerator in Intel(r) Curie(tm) and QuarkSE(tm)
@@ -171,7 +156,6 @@ public:
 		FORGET_NCOUNT    = 0x3C 	// Forget Command / Neuron Count
 	};
 
-
 	enum Masks
 	{
 		NCR_ID = 			0xFF00,	// Upper 8-bit of Neuron ID
@@ -185,35 +169,34 @@ public:
 		NSR_NET_MODE =		0x0010,	// 1 = SR (save/restore) 0 = LR (learn/recognize)
 		NSR_ID_FLAG = 		0x0008,	// Indicates positive identification
 		NSR_UNCERTAIN_FLAG = 0x0004,// Indicates uncertain identification
-			
 	};
-
 
 	// all pattern matching accelerator registers are 16-bits wide, memory-addressed
 	// define efficient inline register access
 	inline volatile uint16_t *regAddress (Registers reg)
 	{
-	  return reinterpret_cast<volatile uint16_t*>(baseAddress + reg);
+		return reinterpret_cast<volatile uint16_t*>(baseAddress + reg);
 	}
 
 	inline uint16_t regRead16 (Registers reg)
 	{
-	  return *regAddress(reg);
+		return *regAddress(reg);
 	}
 
 	inline void regWrite16 (Registers reg, uint16_t value)
 	{
-	  *regAddress(reg) = value;
+		*regAddress(reg) = value;
 	}
 
 	inline void regWrite16 (Registers reg, uint8_t value)
 	{
-	  *regAddress(reg) = value;
+		*regAddress(reg) = value;
 	}
+
 	inline void regWrite16 (Registers reg, int value)
 	{
-	  *regAddress(reg) = value;
+		*regAddress(reg) = value;
 	}
+};
 
-
-};	
+#endif

@@ -19,16 +19,15 @@
 
 #include "CuriePME.h"
 
-// default constructor use a begin() method to initialize the instance 
+// default constructor use a begin() method to initialize the instance
 Intel_PMT::Intel_PMT()
 {
 
-}	
-	
-// Default initializer 
+}
+
+// Default initializer
 void Intel_PMT::begin(void)
 {
-
 	uint16_t savedNSR = regRead16( NSR );
 	forget();
 
@@ -41,7 +40,7 @@ void Intel_PMT::begin(void)
 
 	regWrite16( TESTCAT, 0);
 	regWrite16( NSR, savedNSR );
-	
+
 }
 
 // custom initializer for the neural network
@@ -73,34 +72,31 @@ void Intel_PMT::configure( 	uint16_t global_context,
 	regWrite16( MAXIF, maxAIF);
 }
 
-
-
-// clear all commits in the network and make it ready to learn			
+// clear all commits in the network and make it ready to learn
 void Intel_PMT::forget( void )
 {
 	regWrite16( FORGET_NCOUNT, 0 );
 }
-	
-// mark --learn and classify--	
-	
+
+// mark --learn and classify--
+
 uint16_t Intel_PMT::learn(uint8_t *pattern_vector, int32_t vector_length, uint8_t category)
 {
 	if( vector_length > MaxVectorSize )
 		vector_length = MaxVectorSize;
-		
+
 	for( int i = 0; i < vector_length -1; i++ )
 	{
 	 	regWrite16( COMP , pattern_vector[i] );
 	}
-	
+
 	regWrite16( LCOMP, pattern_vector[ vector_length - 1 ] );
 	regWrite16( CAT, category );
-	
+
 	return regRead16( FORGET_NCOUNT );
 
-}	
-	
-	
+}
+
 uint16_t Intel_PMT::classify(uint8_t *pattern_vector, int32_t vector_length)
 {
 
@@ -120,7 +116,7 @@ uint16_t Intel_PMT::classify(uint8_t *pattern_vector, int32_t vector_length)
 
 }
 
-// write vector is used for kNN recognition and does not alter 
+// write vector is used for kNN recognition and does not alter
 // the CAT register, which moves the chain along.
 uint16_t Intel_PMT::writeVector(uint8_t *pattern_vector, int32_t vector_length)
 {
@@ -141,66 +137,59 @@ uint16_t Intel_PMT::writeVector(uint8_t *pattern_vector, int32_t vector_length)
 
 }
 
-
-// retrieve the data of a specific neuron element by ID, between 1 and 128. 
+// retrieve the data of a specific neuron element by ID, between 1 and 128.
 uint16_t Intel_PMT::readNeuron( int32_t neuronID, neuronData& data_array)
 {
-	
 	uint16_t dummy = 0;
 	uint16_t savedNetMode;
 
-	// range check the ID - technically, this should be an error. 
-	
+	// range check the ID - technically, this should be an error.
+
 	if( neuronID < FirstNeuronID )
 		neuronID = FirstNeuronID;
 	if(neuronID > LastNeuronID )
 		neuronID = LastNeuronID;
-	
+
 	// use the beginSaveMode method
 	savedNetMode = beginSaveMode();
-	
-	//iterate over n elements in order to reach the one we want. 
-	
+
+	//iterate over n elements in order to reach the one we want.
+
 	for( int i = 0; i < (neuronID -1); i++)
 	{
-		
+
 		dummy = regRead16( CAT );
 	}
 
 	// retrieve the data using the iterateToSave method
-	
+
 	iterateNeuronsToSave( data_array);
-	
-	//restore the network to how we found it. 
+
+	//restore the network to how we found it.
 	endSaveMode(savedNetMode);
-	
+
 	return 0;
-
 }
-
 
 // mark --save and restore network--
 
 // save and restore knowledge
 uint16_t Intel_PMT::beginSaveMode( void )
 {
-
 	uint16_t savedNetMode = regRead16(NSR);
-	
+
 	// set save/restore mode in the NSR
 	regWrite16( NSR,  regRead16(NSR) | NSR_NET_MODE);
 	// reset the chain to 0th neuron
 	regWrite16( RSTCHAIN, 0);
-		
-	//now ready to iterate the neurons to save them. 
-	return savedNetMode;  
 
+	//now ready to iterate the neurons to save them.
+	return savedNetMode;
 }
 
-// pass the function a structure to save data into 
+// pass the function a structure to save data into
 uint16_t Intel_PMT::iterateNeuronsToSave(neuronData& array )
 {
-
 	array.context =  regRead16( NCR );
 	for( int i=0; i < SaveRestoreSize; i++)
 	{
@@ -209,10 +198,9 @@ uint16_t Intel_PMT::iterateNeuronsToSave(neuronData& array )
 
 	array.influence = regRead16( AIF );
 	array.minInfluence = regRead16( MINIF );
-	array.category = regRead16( CAT );	
+	array.category = regRead16( CAT );
 
 	return array.category;
-
 }
 
 uint16_t Intel_PMT::endSaveMode(void)
@@ -220,12 +208,11 @@ uint16_t Intel_PMT::endSaveMode(void)
 	// set save/restore mode in the NSR
 	regWrite16( NSR,  0);
 	return 0;
-
 }
 
 uint16_t Intel_PMT::endSaveMode(uint16_t savedNetMode)
 {
-	//restore the network to how we found it. 
+	//restore the network to how we found it.
 	regWrite16( NSR, ( savedNetMode &  ~NSR_NET_MODE));
 
 	return 0;
@@ -234,7 +221,6 @@ uint16_t Intel_PMT::endSaveMode(uint16_t savedNetMode)
 
 uint16_t Intel_PMT::beginRestoreMode( void )
 {
-
 	uint16_t savedNetMode = regRead16(NSR);
 
 	forget();
@@ -242,11 +228,12 @@ uint16_t Intel_PMT::beginRestoreMode( void )
 	regWrite16( NSR,  regRead16(NSR) | NSR_NET_MODE);
 	// reset the chain to 0th neuron
 	regWrite16( RSTCHAIN, 0);
-		
-	//now ready to iterate the neurons to restore them. 
-	return savedNetMode;  
+
+	//now ready to iterate the neurons to restore them.
+	return savedNetMode;
 
 }
+
 uint16_t Intel_PMT::iterateNeuronsToRestore(neuronData& array  )
 {
 	regWrite16( NCR, array.context  );
@@ -257,11 +244,9 @@ uint16_t Intel_PMT::iterateNeuronsToRestore(neuronData& array  )
 
 	regWrite16( AIF, array.influence );
 	regWrite16( MINIF, array.minInfluence );
-	regWrite16( CAT, array.category );	
-
+	regWrite16( CAT, array.category );
 
 	return 0;
-
 }
 
 uint16_t Intel_PMT::endRestoreMode(void)
@@ -273,7 +258,7 @@ uint16_t Intel_PMT::endRestoreMode(void)
 
 uint16_t Intel_PMT::endRestoreMode(uint16_t savedNetMode)
 {
-	//restore the network to how we found it. 
+	//restore the network to how we found it.
 	regWrite16( NSR, ( savedNetMode &  ~NSR_NET_MODE));
 
 	return 0;
@@ -284,164 +269,134 @@ uint16_t Intel_PMT::endRestoreMode(uint16_t savedNetMode)
 Intel_PMT::PATTERN_MATCHING_DISTANCE_MODE // L1 or LSup
 Intel_PMT::getDistanceMode(void)
 {
-	
 	if (  NCR_NORM & regRead16( NCR )  )
 	{
 		return LSUP_Distance;
-	
-	} 
-	
-	return L1_Distance;
+	}
 
+	return L1_Distance;
 }
-void 
+
+void
 Intel_PMT::setDistanceMode( Intel_PMT::PATTERN_MATCHING_DISTANCE_MODE mode) // L1 or LSup
 {
 	uint16_t mask = NCR_NORM;
 
 	if( mode == L1_Distance )
 		mask = ~NCR_NORM;
-	
-	// do a read modify write on the NCR register
-	
-	regWrite16( NCR, ( mask & regRead16( NCR ) ) );
 
+	// do a read modify write on the NCR register
+
+	regWrite16( NCR, ( mask & regRead16( NCR ) ) );
 }
-uint16_t 
+
+uint16_t
 Intel_PMT::getGlobalContext( void )
 {
-
 	return ( NCR_CONTEXT & regRead16( NCR ) );
-
 }
-void 
+
+void
 Intel_PMT::setGlobalContext( uint16_t context ) // valid range is 1-127
 {
-
 	uint16_t ncrMask = ~NCR_CONTEXT & regRead16( NCR );
 	ncrMask |= (context & NCR_CONTEXT);
 	regWrite16(NCR, ncrMask  );
-
 }
 
-// NOTE: getCommittedCount() will give inaccurate value if the network is in Save/Restore mode. 
-// It should not be called between the beginSaveMode() and endSaveMode() or between 
+// NOTE: getCommittedCount() will give inaccurate value if the network is in Save/Restore mode.
+// It should not be called between the beginSaveMode() and endSaveMode() or between
 // beginRestoreMode() and endRestoreMode()
-uint16_t 
+uint16_t
 Intel_PMT::getCommittedCount( void )
 {
-
 	return (getFORGET_NCOUNT() & 0xff );
+}
 
-} 
-
-Intel_PMT::PATTERN_MATCHING_CLASSIFICATION_MODE 
+Intel_PMT::PATTERN_MATCHING_CLASSIFICATION_MODE
 Intel_PMT::getClassifierMode( void ) // RBF or KNN
 {
 	if( regRead16( NSR ) & NSR_CLASS_MODE )
 		return KNN_Mode;
-		
-	return RBF_Mode;
 
+	return RBF_Mode;
 }
 
-void 
+void
 Intel_PMT::setClassifierMode( Intel_PMT::PATTERN_MATCHING_CLASSIFICATION_MODE mode )
 {
-
 	uint16_t mask = regRead16(NSR );
 	mask &= ~NSR_CLASS_MODE;
-	
+
 	if( mode == KNN_Mode )
 		mask |= NSR_CLASS_MODE;
-		
+
 	regWrite16( NSR, mask);
-
-
-
-}	
-
-
+}
 
 // mark --register access--
-	//getter and setters
- uint16_t Intel_PMT::getNCR( void )
+//getter and setters
+uint16_t Intel_PMT::getNCR( void )
 {
-
 	return regRead16(NCR);
+}
 
-} 
- uint16_t Intel_PMT::getCOMP( void )
+uint16_t Intel_PMT::getCOMP( void )
 {
-
 	return regRead16(COMP);
-
 }
- uint16_t Intel_PMT::getLCOMP( void )
-{
 
+uint16_t Intel_PMT::getLCOMP( void )
+{
 	return regRead16(LCOMP);
-
 }
- uint16_t Intel_PMT::getIDX_DIST( void )
-{
 
+uint16_t Intel_PMT::getIDX_DIST( void )
+{
 	return regRead16(IDX_DIST);
-
 }
- uint16_t Intel_PMT::getCAT( void )
-{
 
+uint16_t Intel_PMT::getCAT( void )
+{
 	return regRead16(CAT);
-
 }
- uint16_t Intel_PMT::getAIF( void )
-{
 
+uint16_t Intel_PMT::getAIF( void )
+{
 	return regRead16(AIF);
-
 }
- uint16_t Intel_PMT::getMINIF( void )
-{
 
+uint16_t Intel_PMT::getMINIF( void )
+{
 	return regRead16(MINIF);
-
 }
- uint16_t Intel_PMT::getMAXIF( void )
-{
 
+uint16_t Intel_PMT::getMAXIF( void )
+{
 	return regRead16(MAXIF);
-
 }
- uint16_t Intel_PMT::getNID( void )
-{
 
+uint16_t Intel_PMT::getNID( void )
+{
 	return regRead16(NID);
-
 }
- uint16_t Intel_PMT::getGCR( void )
+
+uint16_t Intel_PMT::getGCR( void )
 {
-
-	return regRead16(GCR);
-
+    return regRead16(GCR);
 }
- uint16_t Intel_PMT::getRSTCHAIN( void )
-{
 
+uint16_t Intel_PMT::getRSTCHAIN( void )
+{
 	return regRead16(RSTCHAIN);
-
 }
- uint16_t Intel_PMT::getNSR( void )
-{
 
+uint16_t Intel_PMT::getNSR( void )
+{
 	return regRead16(NSR);
-
 }
- uint16_t Intel_PMT::getFORGET_NCOUNT( void )
+
+uint16_t Intel_PMT::getFORGET_NCOUNT( void )
 {
-
 	return regRead16(FORGET_NCOUNT);
-
 }
-
-

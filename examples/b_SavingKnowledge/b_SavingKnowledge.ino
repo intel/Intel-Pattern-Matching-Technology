@@ -3,7 +3,7 @@
    See license notice at end of file.
 */
 
-// This Example illustrates how to train the Intel(r) Curie(tm) pattern matching engine with 
+// This Example illustrates how to train the Intel(r) Curie(tm) pattern matching engine with
 // example data and how to tell how many neurons are committed in the network.
 
 #include "CuriePME.h"
@@ -37,84 +37,69 @@ void setup() {
 }
 
 void loop() {
-    
-    uint8_t vector[3];    
-    // now we'll classify some unknown data and let the 
-    // engine decide which pattern of 3 numbers most closely match
-    // what it has been taught, or if they don't match anything it knows about.
-    
-    
-    int x, y, z;
-    while (Serial.available() > 0) {
-      
-      x = Serial.parseInt();
-      y = Serial.parseInt();
-      z = Serial.parseInt();
 
-      if (Serial.read() == '\n') {
+  uint8_t vector[3];
+  // now we'll classify some unknown data and let the
+  // engine decide which pattern of 3 numbers most closely match
+  // what it has been taught, or if they don't match anything it knows about.
 
-        vector[0] = constrain(x, 0, 255);
-        vector[1] = constrain(y, 0, 255);
-        vector[2] = constrain(z, 0, 255);
+  int x, y, z;
+  while (Serial.available() > 0) {
 
-        int answer = CuriePME.classify(vector, 3 );
-        
-        Serial.print("You entered: ");
-        Serial.print( vector[0] );
-        Serial.print(",");
-        Serial.print( vector[1] );
-        Serial.print(",");
-        Serial.print( vector[2] );
-        Serial.print("\n");
+    x = Serial.parseInt();
+    y = Serial.parseInt();
+    z = Serial.parseInt();
 
-        if( answer == 0x7FFF )
-        { 
-          Serial.print("Which didn't match any of the trained categories.\n");
-        } else {
+    if (Serial.read() == '\n') {
+
+      vector[0] = constrain(x, 0, 255);
+      vector[1] = constrain(y, 0, 255);
+      vector[2] = constrain(z, 0, 255);
+
+      int answer = CuriePME.classify(vector, 3 );
+
+      Serial.print("You entered: ");
+      Serial.print( vector[0] );
+      Serial.print(",");
+      Serial.print( vector[1] );
+      Serial.print(",");
+      Serial.print( vector[2] );
+      Serial.print("\n");
+
+      if( answer == 0x7FFF ) {
+        Serial.print("Which didn't match any of the trained categories.\n");
+      } else {
         Serial.print("The closest match to the trained data \n");
         Serial.print("is category: ");
         Serial.print( answer );
-        Serial.print("\n");
-
-        }
-
-        
+         Serial.print("\n");
       }
-
-    
     }
-
-     
-
-
+  }
 }
 
 
 
-// The pattern matching engine will commit a new neuron for each new category. 
-// Adding additional data to a category may or may not commit more neurons. 
-// If the training data is relatively close together and well separated 
-// from other committed neurons, it usually will not commit an additional 
+// The pattern matching engine will commit a new neuron for each new category.
+// Adding additional data to a category may or may not commit more neurons.
+// If the training data is relatively close together and well separated
+// from other committed neurons, it usually will not commit an additional
 // neuron. Widely separated data sets will usually commit more neurons per category.
 void trainNeuronsWithData( void )
 {
-
   Serial.print("Neurons committed before learning = ");
   Serial.print( CuriePME.getCommittedCount());
   Serial.print("\n");
 
-
- 
   uint8_t vector[3];
 
   //Category 1
   vector[0] = 11;
   vector[1] = 24;
   vector[2] = 29;
-  // give the data, the number of elements and the category it belongs to. 
+  // give the data, the number of elements and the category it belongs to.
   CuriePME.learn(vector, 3, 1);
   printTraining(vector, 3, 1);
-
 
   //Category 2
   vector[0] = 18;
@@ -151,18 +136,13 @@ void trainNeuronsWithData( void )
   CuriePME.learn((uint8_t *)vector, 3, 6);
   printTraining(vector, 3, 6);
 
-  
   Serial.print("Neurons committed after learning = ");
   Serial.print( CuriePME.getCommittedCount());
   Serial.print("\n");
-
-
-
 }
 
 void printTraining ( uint8_t* vector, int length, int category)
 {
-
   Serial.print("Category ");
   Serial.print( category );
   Serial.print(" trained with: ");
@@ -172,16 +152,12 @@ void printTraining ( uint8_t* vector, int length, int category)
   Serial.print(", ");
   Serial.print( vector[2]);
   Serial.print("\n \n");
-
- 
 }
-
 
 void saveNetworkKnowledge ( void )
 {
   const char *filename = "NeurData.dat";
   SerialFlashFile file;
-
 
   uint16_t savedState = CuriePME.beginSaveMode();
   Intel_PMT::neuronData neuronData;
@@ -191,37 +167,34 @@ void saveNetworkKnowledge ( void )
   Serial.print( fileSize );
   Serial.print("\n");
 
-   create_if_not_exists( filename, fileSize ); 
-    // Open the file and write test data
+  create_if_not_exists( filename, fileSize );
+  // Open the file and write test data
   file = SerialFlash.open(filename);
   file.erase();
-  if( file )
-  {
-    // iterate over the network and save the data. 
-    while( uint16_t nCount = CuriePME.iterateNeuronsToSave(neuronData ) )
-    {
 
-        if( nCount == 0x7FFF)
-          break;
-        Serial.print("Saving Neuron: ");
-        Serial.print(nCount);
-        Serial.print("\n");
-        uint16_t neuronFields[4];
+  if (file) {
+    // iterate over the network and save the data.
+    while( uint16_t nCount = CuriePME.iterateNeuronsToSave(neuronData)) {
+      if( nCount == 0x7FFF)
+        break;
 
-        neuronFields[0] = neuronData.context;
-        neuronFields[1] = neuronData.influence;
-        neuronFields[2] = neuronData.minInfluence;
-        neuronFields[3] = neuronData.category;
+      Serial.print("Saving Neuron: ");
+      Serial.print(nCount);
+      Serial.print("\n");
+      uint16_t neuronFields[4];
 
-        file.write( (void*) neuronFields, 8);
-        file.write( (void*) neuronData.vector, 128 );
-      
+      neuronFields[0] = neuronData.context;
+      neuronFields[1] = neuronData.influence;
+      neuronFields[2] = neuronData.minInfluence;
+      neuronFields[3] = neuronData.category;
+
+      file.write( (void*) neuronFields, 8);
+      file.write( (void*) neuronData.vector, 128 );
     }
-    
   }
+
   CuriePME.endSaveMode(savedState);
   Serial.print("Knowledge Set Saved. \n");
-
 }
 
 
