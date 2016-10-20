@@ -59,7 +59,11 @@ void setup()
     while(!Serial);
 
     pinMode(buttonPin, INPUT);
+
+    /* Start the IMU (Intertial Measurement Unit) */
     CurieIMU.begin();
+
+    /* Start the PME (Pattern Matching Engine) */
     CuriePME.begin();
 
     CurieIMU.setAccelerometerRate(sampleRateHZ);
@@ -72,13 +76,13 @@ void setup()
 
 void loop ()
 {
-    uint8_t vector[vectorNumBytes];
+    byte vector[vectorNumBytes];
     unsigned int category;
     char letter;
 
     /* Record IMU data while button is being held, and
      * convert it to a suitable vector */
-    vectorFromIMUData(vector);
+    readVectorFromIMU(vector);
 
     /* Use the PME to classify the vector, i.e. return a category
      * from 1-26, representing a letter from A-Z */
@@ -94,7 +98,7 @@ void loop ()
 
 /* Simple "moving average" filter, removes low noise and other small
  * anomalies, with the effect of smoothing out the data stream. */
-uint8_t movingAvg (uint8_t *samples, unsigned int num, unsigned int pos,
+byte getAverageSample(byte samples[], unsigned int num, unsigned int pos,
                    unsigned int step)
 {
     unsigned int ret;
@@ -112,7 +116,7 @@ uint8_t movingAvg (uint8_t *samples, unsigned int num, unsigned int pos,
         ret /= size;
     }
 
-    return (uint8_t)ret;
+    return (byte)ret;
 }
 
 /* We need to compress the stream of raw accelerometer data into 128 bytes, so
@@ -134,7 +138,7 @@ uint8_t movingAvg (uint8_t *samples, unsigned int num, unsigned int pos,
  *    single neuron (128 / 3 = 42.666). So if we take (for example) every 5th
  *    sample until we have 42, then we should cover most of the sample window
  *    and have some semblance of the original pattern. */
-void undersample(uint8_t *samples, int numSamples, uint8_t *vector)
+void undersample(byte samples[], int numSamples, byte vector[])
 {
     unsigned int vi = 0;
     unsigned int si = 0;
@@ -145,7 +149,7 @@ void undersample(uint8_t *samples, int numSamples, uint8_t *vector)
     samples += (remainder / 2) * 3;
     for (unsigned int i = 0; i < samplesPerVector; ++i) {
         for (unsigned int j = 0; j < 3; ++j) {
-            vector[vi + j] = movingAvg(samples, numSamples, si + j, step);
+            vector[vi + j] = getAverageSample(samples, numSamples, si + j, step);
         }
 
         si += (step * 3);
@@ -153,9 +157,9 @@ void undersample(uint8_t *samples, int numSamples, uint8_t *vector)
     }
 }
 
-void vectorFromIMUData(uint8_t *vector)
+void readVectorFromIMU(byte vector[])
 {
-    uint8_t accel[sensorBufSize];
+    byte accel[sensorBufSize];
     int raw[3];
 
     unsigned int samples = 0;
@@ -171,9 +175,9 @@ void vectorFromIMUData(uint8_t *vector)
             CurieIMU.readAccelerometer(raw[0], raw[1], raw[2]);
 
             /* Map raw values to 0-255 */
-            accel[i] = (uint8_t) map(raw[0], IMULow, IMUHigh, 0, 255);
-            accel[i + 1] = (uint8_t) map(raw[1], IMULow, IMUHigh, 0, 255);
-            accel[i + 2] = (uint8_t) map(raw[2], IMULow, IMUHigh, 0, 255);
+            accel[i] = (byte) map(raw[0], IMULow, IMUHigh, 0, 255);
+            accel[i + 1] = (byte) map(raw[1], IMULow, IMUHigh, 0, 255);
+            accel[i + 2] = (byte) map(raw[2], IMULow, IMUHigh, 0, 255);
 
             i += 3;
             ++samples;
@@ -194,11 +198,11 @@ void trainLetter(char letter, unsigned int repeat)
     unsigned int i = 0;
 
     while (i < repeat) {
-        uint8_t vector[vectorNumBytes];
+        byte vector[vectorNumBytes];
 
         if (i) Serial.println("And again...");
 
-        vectorFromIMUData(vector);
+        readVectorFromIMU(vector);
         CuriePME.learn(vector, vectorNumBytes, letter - upperStart);
 
         Serial.println("Got it!");
