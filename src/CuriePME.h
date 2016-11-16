@@ -85,19 +85,13 @@ public:
 	uint16_t readNeuron( int32_t neuronID, neuronData& data_array);
 
 	// save and restore knowledge
-	uint16_t beginSaveMode( void );  // passes back the contents of the NSR register
+	void beginSaveMode(void);  // saves the contents of the NSR register
 	uint16_t iterateNeuronsToSave( neuronData& data_array );
-	uint16_t endSaveMode(void);
-	// you can optionally restore the NSR register by passing the value from
-	// from beginSaveMode()
-	uint16_t endSaveMode(uint16_t);
+	void endSaveMode(void); // restores the NSR value saved by beginSaveMode
 
-	uint16_t beginRestoreMode( void );// passes back the contents of the NSR register
+	void beginRestoreMode(void);
 	uint16_t iterateNeuronsToRestore( neuronData& data_array );
-	uint16_t endRestoreMode(void);
-	// you can optionally restore the NSR register by passing the value from
-	// from beginRestoreMode() you may not want this when restoring a network.
-	uint16_t endRestoreMode(uint16_t);
+	void endRestoreMode(void);
 
 	//getter and setters
 	PATTERN_MATCHING_DISTANCE_MODE getDistanceMode(void);
@@ -197,6 +191,10 @@ public:
 	{
 		*regAddress(reg) = value;
 	}
+
+private:
+    uint16_t nsr_save;
+
 };
 
 extern Intel_PMT CuriePME;
