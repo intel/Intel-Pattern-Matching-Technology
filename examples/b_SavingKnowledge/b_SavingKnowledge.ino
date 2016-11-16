@@ -136,7 +136,6 @@ void saveNetworkKnowledge ( void )
   const char *filename = "NeurData.dat";
   SerialFlashFile file;
 
-  uint16_t savedState = CuriePME.beginSaveMode();
   Intel_PMT::neuronData neuronData;
   uint32_t fileSize = 128 * sizeof(neuronData);
 
@@ -149,6 +148,7 @@ void saveNetworkKnowledge ( void )
   file = SerialFlash.open(filename);
   file.erase();
 
+  CuriePME.beginSaveMode();
   if (file) {
     // iterate over the network and save the data.
     while( uint16_t nCount = CuriePME.iterateNeuronsToSave(neuronData)) {
@@ -170,7 +170,7 @@ void saveNetworkKnowledge ( void )
     }
   }
 
-  CuriePME.endSaveMode(savedState);
+  CuriePME.endSaveMode();
   Serial.print("Knowledge Set Saved. \n");
 }
 

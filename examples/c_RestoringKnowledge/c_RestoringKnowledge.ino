@@ -100,12 +100,12 @@ void restoreNetworkKnowledge ( void )
   SerialFlashFile file;
   int32_t fileNeuronCount = 0;
 
-  uint16_t savedState = CuriePME.beginRestoreMode();
   Intel_PMT::neuronData neuronData;
 
 	// Open the file and write test data
   file = SerialFlash.open(filename);
 
+  CuriePME.beginRestoreMode();
   if (file) {
     // iterate over the network and save the data.
     while(1) {
@@ -150,7 +150,7 @@ void restoreNetworkKnowledge ( void )
     }
   }
 
-  CuriePME.endRestoreMode(savedState);
+  CuriePME.endRestoreMode();
   Serial.print("Knowledge Set Restored. \n");
 }
 

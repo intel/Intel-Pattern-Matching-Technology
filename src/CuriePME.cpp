@@ -143,7 +143,6 @@ uint16_t Intel_PMT::writeVector(uint8_t *pattern_vector, int32_t vector_length)
 uint16_t Intel_PMT::readNeuron( int32_t neuronID, neuronData& data_array)
 {
 	uint16_t dummy = 0;
-	uint16_t savedNetMode;
 
 	// range check the ID - technically, this should be an error.
 
@@ -153,7 +152,7 @@ uint16_t Intel_PMT::readNeuron( int32_t neuronID, neuronData& data_array)
 		neuronID = LastNeuronID;
 
 	// use the beginSaveMode method
-	savedNetMode = beginSaveMode();
+	beginSaveMode();
 
 	//iterate over n elements in order to reach the one we want.
 
@@ -168,7 +167,7 @@ uint16_t Intel_PMT::readNeuron( int32_t neuronID, neuronData& data_array)
 	iterateNeuronsToSave( data_array);
 
 	//restore the network to how we found it.
-	endSaveMode(savedNetMode);
+	endSaveMode();
 
 	return 0;
 }
@@ -176,17 +175,14 @@ uint16_t Intel_PMT::readNeuron( int32_t neuronID, neuronData& data_array)
 // mark --save and restore network--
 
 // save and restore knowledge
-uint16_t Intel_PMT::beginSaveMode( void )
+void Intel_PMT::beginSaveMode(void)
 {
-	uint16_t savedNetMode = regRead16(NSR);
+	nsr_save = regRead16(NSR);
 
 	// set save/restore mode in the NSR
 	regWrite16( NSR,  regRead16(NSR) | NSR_NET_MODE);
 	// reset the chain to 0th neuron
 	regWrite16( RSTCHAIN, 0);
-
-	//now ready to iterate the neurons to save them.
-	return savedNetMode;
 }
 
 // pass the function a structure to save data into
@@ -205,35 +201,22 @@ uint16_t Intel_PMT::iterateNeuronsToSave(neuronData& array )
 	return array.category;
 }
 
-uint16_t Intel_PMT::endSaveMode(void)
-{
-	// set save/restore mode in the NSR
-	regWrite16( NSR,  0);
-	return 0;
-}
-
-uint16_t Intel_PMT::endSaveMode(uint16_t savedNetMode)
+void Intel_PMT::endSaveMode(void)
 {
 	//restore the network to how we found it.
-	regWrite16( NSR, ( savedNetMode &  ~NSR_NET_MODE));
-
-	return 0;
+	regWrite16(NSR, (nsr_save &  ~NSR_NET_MODE));
 }
 
 
-uint16_t Intel_PMT::beginRestoreMode( void )
+void Intel_PMT::beginRestoreMode(void)
 {
-	uint16_t savedNetMode = regRead16(NSR);
+	nsr_save = regRead16(NSR);
 
 	forget();
 	// set save/restore mode in the NSR
 	regWrite16( NSR,  regRead16(NSR) | NSR_NET_MODE);
 	// reset the chain to 0th neuron
 	regWrite16( RSTCHAIN, 0);
-
-	//now ready to iterate the neurons to restore them.
-	return savedNetMode;
-
 }
 
 uint16_t Intel_PMT::iterateNeuronsToRestore(neuronData& array  )
@@ -251,19 +234,10 @@ uint16_t Intel_PMT::iterateNeuronsToRestore(neuronData& array  )
 	return 0;
 }
 
-uint16_t Intel_PMT::endRestoreMode(void)
-{
-	// set save/restore mode in the NSR
-	regWrite16( NSR,  0);
-	return 0;
-}
-
-uint16_t Intel_PMT::endRestoreMode(uint16_t savedNetMode)
+void Intel_PMT::endRestoreMode(void)
 {
 	//restore the network to how we found it.
-	regWrite16( NSR, ( savedNetMode &  ~NSR_NET_MODE));
-
-	return 0;
+	regWrite16(NSR, (nsr_save & ~NSR_NET_MODE));
 }
 
 // mark -- getter and setters--
