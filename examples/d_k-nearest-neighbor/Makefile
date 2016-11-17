@@ -9,8 +9,8 @@ current_dir = $(shell pwd)
 VERBOSE  = true
 
 LIBDIRS  = $(ARDUINOSW_DIR)/corelibs/libraries/Intel-Pattern-Matching-Technology/src \
-		   $(ARDUINOSW_DIR)/corelibs/libraries/SPI/src \ 
-		   $(ARDUINOSW_DIR)/corelibs/libraries/SerialFlash/src 
+		   $(ARDUINOSW_DIR)/corelibs/libraries/SPI/src \
+		   $(ARDUINOSW_DIR)/corelibs/libraries/SerialFlash
 
 include $(ARDUINOSW_DIR)/Makefile.inc
 
