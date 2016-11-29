@@ -8,6 +8,9 @@
  * PME. Once training is finished, you can keep drawing letters and the PME
  * will try to guess which letter you are drawing.
  *
+ * This example requires a button to be connected to digital pin 4
+ * https://www.arduino.cc/en/Tutorial/Button
+ *
  * NOTE: For best results, draw big letters, at least 1-2 feet tall.
  *
  * Copyright (c) 2016 Intel Corporation.  All rights reserved.
@@ -166,10 +169,10 @@ void readVectorFromIMU(byte vector[])
     unsigned int i = 0;
 
     /* Wait until button is pressed */
-    while (digitalRead(buttonPin) == HIGH);
+    while (digitalRead(buttonPin) == LOW);
 
     /* While button is being held... */
-    while (digitalRead(buttonPin) == LOW) {
+    while (digitalRead(buttonPin) == HIGH) {
         if (CurieIMU.accelDataReady()) {
 
             CurieIMU.readAccelerometer(raw[0], raw[1], raw[2]);
