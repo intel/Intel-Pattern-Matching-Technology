@@ -116,7 +116,7 @@ have been read.
   
 *Return value*  
 
-when all committed neurons have been read. Otherwise, this method returns
+0 when all committed neurons have been read. Otherwise, this method returns
 the trained category of the neuron being read
   
 ### ``CuriePME.endSaveMode()``
