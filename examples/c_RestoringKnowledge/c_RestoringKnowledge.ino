@@ -64,7 +64,7 @@ void loop() {
     Serial.print("You entered: ");
     printVector(vector);
 
-    if( answer == 0x7FFF ) {
+    if( answer == CuriePME.noMatch ) {
       Serial.print("Which didn't match any of the trained categories.\n");
     } else {
       Serial.print("The closest match to the trained data \n");

@@ -40,10 +40,6 @@ const unsigned int sampleRateHZ = 200;
 /* No. of bytes that one neuron can hold */
 const unsigned int vectorNumBytes = 128;
 
-/* Magic number returned by the PME if input data can't
- * be classified */
-const unsigned int noMatch = 0x7fff;
-
 /* Number of processed samples (1 sample == accel x, y, z)
  * that can fit inside a neuron */
 const unsigned int samplesPerVector = (vectorNumBytes / 3);
@@ -91,7 +87,7 @@ void loop ()
      * from 1-26, representing a letter from A-Z */
     category = CuriePME.classify(vector, vectorNumBytes);
 
-    if (category == noMatch) {
+    if (category == CuriePME.noMatch) {
         Serial.println("Don't recognise that one-- try again.");
     } else {
         letter = category + upperStart;
