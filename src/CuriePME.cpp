@@ -82,7 +82,7 @@ void Intel_PMT::forget( void )
 
 // mark --learn and classify--
 
-uint16_t Intel_PMT::learn(uint8_t *pattern_vector, int32_t vector_length, uint8_t category)
+uint16_t Intel_PMT::learn(uint8_t *pattern_vector, int32_t vector_length, uint16_t category)
 {
 	if( vector_length > MaxVectorSize )
 		vector_length = MaxVectorSize;
@@ -93,8 +93,10 @@ uint16_t Intel_PMT::learn(uint8_t *pattern_vector, int32_t vector_length, uint8_
 	}
 
 	regWrite16( LCOMP, pattern_vector[ vector_length - 1 ] );
-	regWrite16( CAT, category );
 
+    /* Mask off the 15th bit-- valid categories range from 1-32766,
+     * and bit 15 is used to indicate if a firing neuron has degenerated */
+	regWrite16(CAT, (regRead16(CAT) & ~CAT_CATEGORY) | (category & CAT_CATEGORY));
 	return regRead16( FORGET_NCOUNT );
 
 }
