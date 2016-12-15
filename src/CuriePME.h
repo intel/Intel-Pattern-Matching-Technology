@@ -80,7 +80,7 @@ public:
 			PATTERN_MATCHING_CLASSIFICATION_MODE classification_mode,
 			uint16_t minAIF, uint16_t maxAIF );
 
-	uint16_t learn(uint8_t *pattern_vector, int32_t vector_length, uint8_t category);
+	uint16_t learn(uint8_t *pattern_vector, int32_t vector_length, uint16_t category);
 	uint16_t classify(uint8_t *pattern_vector, int32_t vector_length);
 
 	uint16_t readNeuron( int32_t neuronID, neuronData& data_array);
