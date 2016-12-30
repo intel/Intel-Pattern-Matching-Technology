@@ -247,25 +247,16 @@ void Intel_PMT::endRestoreMode(void)
 Intel_PMT::PATTERN_MATCHING_DISTANCE_MODE // L1 or LSup
 Intel_PMT::getDistanceMode(void)
 {
-	if (  NCR_NORM & regRead16( NCR )  )
-	{
-		return LSUP_Distance;
-	}
-
-	return L1_Distance;
+	return (GCR_DIST & regRead16(GCR)) ? LSUP_Distance : L1_Distance;
 }
 
 void
 Intel_PMT::setDistanceMode( Intel_PMT::PATTERN_MATCHING_DISTANCE_MODE mode) // L1 or LSup
 {
-	uint16_t mask = NCR_NORM;
+	uint16_t rd = regRead16(GCR);
 
-	if( mode == L1_Distance )
-		mask = ~NCR_NORM;
-
-	// do a read modify write on the NCR register
-
-	regWrite16( NCR, ( mask & regRead16( NCR ) ) );
+	// do a read modify write on the GCR register
+	regWrite16(GCR, (mode == LSUP_Distance) ? rd | GCR_DIST : rd & ~GCR_DIST);
 }
 
 uint16_t Intel_PMT::getGlobalContext(void)
