@@ -99,6 +99,8 @@ public:
 	void setDistanceMode( PATTERN_MATCHING_DISTANCE_MODE mode);
 	uint16_t getGlobalContext( void );
 	void setGlobalContext( uint16_t context ); // valid range is 1-127
+	uint16_t getNeuronContext( void );
+	void setNeuronContext( uint16_t context ); // valid range is 1-127
 
 	// NOTE: getCommittedCount() will give inaccurate value if the network is in Save/Restore mode.
 	// It should not be called between the beginSaveMode() and endSaveMode() or between
