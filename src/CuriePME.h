@@ -32,6 +32,8 @@ class Intel_PMT
 public:
 
 	static const uint32_t noMatch = 0x7fff;
+	static const uint16_t minContext = 0;
+	static const uint16_t maxContext = 127;
 	static const int32_t maxVectorSize = 128;
 	static const int32_t firstNeuronID = 1;
 	static const int32_t lastNeuronID = 128;
