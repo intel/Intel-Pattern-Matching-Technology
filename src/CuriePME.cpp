@@ -268,18 +268,30 @@ Intel_PMT::setDistanceMode( Intel_PMT::PATTERN_MATCHING_DISTANCE_MODE mode) // L
 	regWrite16( NCR, ( mask & regRead16( NCR ) ) );
 }
 
-uint16_t
-Intel_PMT::getGlobalContext( void )
+uint16_t Intel_PMT::getGlobalContext(void)
 {
-	return ( NCR_CONTEXT & regRead16( NCR ) );
+	return (GCR_GLOBAL & regRead16(GCR));
 }
 
-void
-Intel_PMT::setGlobalContext( uint16_t context ) // valid range is 1-127
+// valid range is 1-127
+void Intel_PMT::setGlobalContext(uint16_t context)
 {
-	uint16_t ncrMask = ~NCR_CONTEXT & regRead16( NCR );
+	uint16_t gcrMask = ~GCR_GLOBAL & regRead16(GCR);
+	gcrMask |= (context & GCR_GLOBAL);
+	regWrite16(GCR, gcrMask);
+}
+
+uint16_t Intel_PMT::getNeuronContext(void)
+{
+	return (NCR_CONTEXT & regRead16(NCR));
+}
+
+// valid range is 1-127
+void Intel_PMT::setNeuronContext(uint16_t context)
+{
+	uint16_t ncrMask = ~NCR_CONTEXT & regRead16(NCR);
 	ncrMask |= (context & NCR_CONTEXT);
-	regWrite16(NCR, ncrMask  );
+	regWrite16(NCR, ncrMask);
 }
 
 // NOTE: getCommittedCount() will give inaccurate value if the network is in Save/Restore mode.
