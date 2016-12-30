@@ -32,11 +32,11 @@ class Intel_PMT
 public:
 
 	static const uint32_t noMatch = 0x7fff;
-	static const int32_t MaxVectorSize = 128;
-	static const int32_t FirstNeuronID = 1;
-	static const int32_t LastNeuronID = 128;
-	static const int32_t MaxNeurons = 128;
-	static const int32_t SaveRestoreSize = 128;
+	static const int32_t maxVectorSize = 128;
+	static const int32_t firstNeuronID = 1;
+	static const int32_t lastNeuronID = 128;
+	static const int32_t maxNeurons = 128;
+	static const int32_t saveRestoreSize = 128;
 
 	enum PATTERN_MATCHING_CLASSIFICATION_MODE
 	{
@@ -57,7 +57,7 @@ public:
 		uint16_t  minInfluence;
 		uint16_t  category;
 
-		uint8_t   vector[SaveRestoreSize];
+		uint8_t   vector[saveRestoreSize];
 
 	} neuronData;
 
