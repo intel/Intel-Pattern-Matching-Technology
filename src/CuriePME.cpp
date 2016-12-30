@@ -35,7 +35,7 @@ void Intel_PMT::begin(void)
 
 	regWrite16( NSR, (uint16_t) NSR_NET_MODE);
 
-	for( int i = 0; i < MaxNeurons; i++)
+	for( int i = 0; i < maxNeurons; i++)
 	{
 		regWrite16( TESTCOMP, 0 );
 	}
@@ -84,8 +84,8 @@ void Intel_PMT::forget( void )
 
 uint16_t Intel_PMT::learn(uint8_t *pattern_vector, int32_t vector_length, uint16_t category)
 {
-	if( vector_length > MaxVectorSize )
-		vector_length = MaxVectorSize;
+	if( vector_length > maxVectorSize )
+		vector_length = maxVectorSize;
 
 	for( int i = 0; i < vector_length -1; i++ )
 	{
@@ -108,7 +108,7 @@ uint16_t Intel_PMT::classify(uint8_t *pattern_vector, int32_t vector_length)
 	uint8_t *current_vector = pattern_vector;
 	uint8_t index = 0;
 
-	if (vector_length > MaxVectorSize) return -1;
+	if (vector_length > maxVectorSize) return -1;
 
 	for (index = 0; index < (vector_length - 1); index++)
 	{
@@ -129,7 +129,7 @@ uint16_t Intel_PMT::writeVector(uint8_t *pattern_vector, int32_t vector_length)
 	uint8_t *current_vector = pattern_vector;
 	uint8_t index = 0;
 
-	if (vector_length > MaxVectorSize) return -1;
+	if (vector_length > maxVectorSize) return -1;
 
 	for (index = 0; index < (vector_length - 1); index++)
 	{
@@ -148,10 +148,10 @@ uint16_t Intel_PMT::readNeuron( int32_t neuronID, neuronData& data_array)
 
 	// range check the ID - technically, this should be an error.
 
-	if( neuronID < FirstNeuronID )
-		neuronID = FirstNeuronID;
-	if(neuronID > LastNeuronID )
-		neuronID = LastNeuronID;
+	if( neuronID < firstNeuronID )
+		neuronID = firstNeuronID;
+	if(neuronID > lastNeuronID )
+		neuronID = lastNeuronID;
 
 	// use the beginSaveMode method
 	beginSaveMode();
@@ -191,7 +191,7 @@ void Intel_PMT::beginSaveMode(void)
 uint16_t Intel_PMT::iterateNeuronsToSave(neuronData& array )
 {
 	array.context =  regRead16( NCR );
-	for( int i=0; i < SaveRestoreSize; i++)
+	for( int i=0; i < saveRestoreSize; i++)
 	{
 		array.vector[i] = regRead16(COMP);
 	}
@@ -224,7 +224,7 @@ void Intel_PMT::beginRestoreMode(void)
 uint16_t Intel_PMT::iterateNeuronsToRestore(neuronData& array  )
 {
 	regWrite16( NCR, array.context  );
-	for( int i=0; i < SaveRestoreSize; i++)
+	for( int i=0; i < saveRestoreSize; i++)
 	{
 		regWrite16(COMP, array.vector[i]);
 	}
