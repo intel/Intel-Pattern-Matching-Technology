@@ -264,7 +264,8 @@ uint16_t Intel_PMT::getGlobalContext(void)
 	return (GCR_GLOBAL & regRead16(GCR));
 }
 
-// valid range is 1-127
+// A valid context value is in the range of 1-127. A context
+// value of 0 enables all neurons, without regard to their context
 void Intel_PMT::setGlobalContext(uint16_t context)
 {
 	uint16_t gcrMask = ~GCR_GLOBAL & regRead16(GCR);
