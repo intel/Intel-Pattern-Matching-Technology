@@ -275,7 +275,9 @@ Valid values are:
 void CuriePME.setGlobalContext(uint16_t context)
 ```
 
-Writes a value to the Global Context Register
+Writes a value to the Global Context Register. Valid context values range
+between 1-127. A context value of 0 enables all neurons, with no regard to
+their context
   
 *Parameters*  
 
