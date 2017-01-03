@@ -1,6 +1,79 @@
+# Intel® Pattern Matching Technology
+
+This repository contains the CuriePME library, which provides access to the
+Pattern Matching Engine (PME) within the Intel® Curie™ Compute Module.
+
+Supported Curie™ hardware platforms:
+
+* [Arduino/Genuino 101](https://www.arduino.cc/en/Main/ArduinoBoard101)
+
+* [tinyTILE (Farnell)](https://www.element14.com/community/docs/DOC-82913/l/tinytile-intel-curie-module-based-board)
+
+## Development Environments
+
+This library can be used in the following development environments:
+
+* On Ubuntu 14.04 LTS or 16.04 LTS, using the latest version of the
+[Curie Open Developer Kit](https://intel.com/curieodk)
+
+* In the Arduino IDE ("Download as a ZIP", unzip, place inside your libraries
+  folder)
+
+## About the Library
+the PME is a hardware engine capable of learning and recognizing patterns in
+arbitrary sets of data. The CuriePME library provides access to the PME,
+making it possible to implement machine-learning pattern matching or
+classification algorithms which are accelerated by the pattern-matching
+capabilities of the PME.
+
+  + Basic Functions Supported:
+     * Learning Patterns
+     * Recognizing Patterns
+     * Storing Pattern Memory (Knowledge) [Requires [SerialFlash](https://github.com/PaulStoffregen/SerialFlash) Library]
+     * Retrieving Pattern Memory (Knowledge) [Requires [SerialFlash](https://github.com/PaulStoffregen/SerialFlash) Library]
+
+## About the Intel® Curie™ Pattern Matching Engine
+
+The Pattern Matching Engine (PME) is a parallel data recognition engine with the following features:
++ 128 parallel Processing Elements (PE) each with"
+
+    - 128 byte input vector
+    - 128 byte model memory.
+    - 8-Bit Arithmetic Units
+    - Two distance evaluation norms with 16-bit resolution:
+
+        * L1 norm (Manhattan Distance)
+        * Lsup (Supremum) norm (Chebyshev Distance)
+
+    - Support for up to 32,768 Categories
+    - Classification states:
+
+           * ID  - Identified
+           * UNC - Uncertain
+           * UNK - Unknown
+
++ Two Classification Functions:
+
+     * k-nearest neighbors (KNN)
+     * Radial Basis Function (RBF)
+
++ Support for up to 127 Contexts
+
 # CuriePME API reference
 
-## Initialization Functions
+# *Constants*
+
+* ``CuriePME.noMatch (uint32_t)``: The value returned by classify()
+  to indicate a pattern could not be classified
+* ``CuriePME.minContext (uint16_t)``: Minimum context value
+* ``CuriePME.maxContext (uint16_t)``: Maximum context value
+* ``CuriePME.maxVectorSize (int32_t)``: Maximum pattern size (in bytes) that can
+  be accepted by learn() and classify()
+* ``CuriePME.firstNeuronID (int32_t)``: ID of first neuron in network
+* ``CuriePME.lastNeuronID (int32_t)``: ID of last neuron in network
+* ``CuriePME.maxNeurons (int32_t)``: Number of neurons in the network
+
+# *Initialization Functions*
 
 ### ``CuriePME.begin()``
 
@@ -8,7 +81,7 @@
 void CuriePME.begin(void)
 ```
 
-Initialise the PME so it is ready for operation  
+Initialize the PME so it is ready for operation
   
 *Parameters*  
 
@@ -34,7 +107,7 @@ none
 
 none  
   
-## Basic Functions
+# *Basic Functions*
 
 ### ``CuriePME.learn()``
 
@@ -77,10 +150,10 @@ committed neurons in the network to classify the pattern
   
 *Return value*  
 
-`0x7FFF` if the input data did not match any of the trained categories.
+`CuriePME.noMatch` if the input data did not match any of the trained categories.
 Otherwise, the trained category assigned by the network will be returned
   
-## Saving Knowledge
+# *Saving Knowledge*
 
 ### ``CuriePME.beginSaveMode()``
 
@@ -135,7 +208,7 @@ none
 
 none
   
-## Restoring Knowledge
+# *Restoring Knowledge*
 
 ### ``CuriePME.beginRestoreMode()``
 
@@ -188,7 +261,7 @@ none
 
 none
   
-## Configuraton Functions
+# *Configuraton Functions*
 
 ### ``CuriePME.setClassifierMode()``
 
@@ -224,7 +297,7 @@ none
 *Return value*  
 
 `PATTERN_MATCHING_CLASSIFICATION_MODE mode` The classifying function being used.
-Valid values are: 
+Possible values are: 
  
 * `RBF_Mode`
 * `KNN_Mode`
@@ -264,7 +337,7 @@ none
 *Return value*  
 
 `PATTERN_MATCHING_DISTANCE_MODE mode` The distance function being used.
-Valid values are: 
+Possible values are: 
  
 * `LSUP_Distance`
 * `L1_Distance`
@@ -279,7 +352,8 @@ Writes a value to the Global Context Register
   
 *Parameters*  
 
-1. `uint16_t context` : a value between 1-127 representing the desired context
+1. `uint16_t context` : a value between 0-127 representing the desired context.
+   A context value of 0 selects all neurons, regardless of their context value.
   
 *Return value*  
 
@@ -299,9 +373,9 @@ none
   
 *Return value*  
 
-`uint16_t`, the contents of the Global Context Register (a value between 1-127)
+`uint16_t`, the contents of the Global Context Register (a value between 0-127)
   
-## Other Functions
+# *Other Functions*
 
 ### ``CuriePME.getCommittedCount()``
 
@@ -355,5 +429,5 @@ pattern
   
 *Return value*  
 
-`0x7FFF` if the input data did not match any of the trained categories.
+`CuriePME.noMatch` if the input data did not match any of the trained categories.
 Otherwise, the trained category assigned by the network will be returned
