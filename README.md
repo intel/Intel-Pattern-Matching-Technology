@@ -1,3 +1,38 @@
+Table of Contents
+=================
+
+   * [Intel® Pattern Matching Technology](#intel-pattern-matching-technology)
+      * [Development Environments](#development-environments)
+      * [About the Library](#about-the-library)
+      * [About the Intel® Curie™ Pattern Matching Engine](#about-the-intel-curie-pattern-matching-engine)
+   * [CuriePME API reference](#curiepme-api-reference)
+      * [Constants](#constants)
+      * [Initialization Functions](#initialization-functions)
+         * [CuriePME.begin()](#curiepmebegin)
+         * [CuriePME.forget()](#curiepmeforget)
+      * [Basic Functions](#basic-functions)
+         * [CuriePME.learn()](#curiepmelearn)
+         * [CuriePME.classify()](#curiepmeclassify)
+      * [Saving Knowledge](#saving-knowledge)
+         * [CuriePME.beginSaveMode()](#curiepmebeginsavemode)
+         * [CuriePME.iterateNeuronsToSave()](#curiepmeiterateneuronstosave)
+         * [CuriePME.endSaveMode()](#curiepmeendsavemode)
+      * [Restoring Knowledge](#restoring-knowledge)
+         * [CuriePME.beginRestoreMode()](#curiepmebeginrestoremode)
+         * [CuriePME.iterateNeuronsToRestore()](#curiepmeiterateneuronstorestore)
+         * [CuriePME.endRestoreMode()](#curiepmeendrestoremode)
+      * [Configuraton Functions](#configuraton-functions)
+         * [CuriePME.setClassifierMode()](#curiepmesetclassifiermode)
+         * [CuriePME.getClassifierMode()](#curiepmegetclassifiermode)
+         * [CuriePME.setDistanceMode()](#curiepmesetdistancemode)
+         * [CuriePME.getDistanceMode()](#curiepmegetdistancemode)
+         * [CuriePME.setGlobalContext()](#curiepmesetglobalcontext)
+         * [CuriePME.getGlobalContext()](#curiepmegetglobalcontext)
+      * [Other Functions](#other-functions)
+         * [CuriePME.getCommittedCount()](#curiepmegetcommittedcount)
+         * [CuriePME.readNeuron()](#curiepmereadneuron)
+         * [CuriePME.writeVector() (KNN_Mode only)](#curiepmewritevector-knn_mode-only)
+
 # Intel® Pattern Matching Technology
 
 This repository contains the CuriePME library, which provides access to the
@@ -433,3 +468,4 @@ pattern
 
 `CuriePME.noMatch` if the input data did not match any of the trained categories.
 Otherwise, the trained category assigned by the network will be returned
+
