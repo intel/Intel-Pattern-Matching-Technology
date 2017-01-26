@@ -844,7 +844,10 @@ void trainLetters()
         Serial.print(String(i) + "' in the air. Release the button as soon ");
         Serial.println("as you are done.");
 
-        trainLetter(i, trainingReps);
+        /* Train the current letter, and prompt user to draw the
+         * letter 4 times in a row */
+        trainLetter(i, 4);
+
         Serial.println("OK, finished with this letter.");
         delay(2000);
     }
