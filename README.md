@@ -347,7 +347,7 @@ Sets the distance function to be used by the network
   
 *Parameters*  
 
-1. `PATTERN_MATCHING_DISTANCE_MODE mode` The distance funcion to use.
+1. `PATTERN_MATCHING_DISTANCE_MODE mode` The distance function to use.
     Valid values are:  
 
     * `LSUP_Distance` (default)
