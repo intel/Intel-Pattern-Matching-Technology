@@ -459,7 +459,7 @@ first. The first problem...
 As we can see from the graphs above, drawing the letter 'A' takes an average of
 1.6 seconds, which is 160 samples at 100Hz. Each sample (i.e. each call to
 `CurieIMU.readAccelerometer()` takes up 3 'int' values, which are 4 bytes each,
-so 14 bytes per sample.
+so 12 bytes per sample.
 
 ```cpp
 int X, Y, Z;
@@ -468,7 +468,7 @@ int X, Y, Z;
 CurieIMU.readAccelerometer(X, Y, Z);
 ```
 
-This makes for a total of 2,560 bytes that we have to capture to represent the
+This makes for a total of 1,920 bytes that we have to capture to represent the
 letter 'A', which is *way* too much. Remember that our pattern can be no larger
 than 128 bytes, so we need to figure out a clever way to throw away **over 90%**
 of the raw data, without destroying the original pattern.
