@@ -59,8 +59,8 @@ void setup()
 
     pinMode(buttonPin, INPUT);
 
-    /* Start the IMU (Intertial Measurement Unit) */
-    CurieIMU.begin();
+    /* Start the IMU (Intertial Measurement Unit), enable the accelerometer */
+    CurieIMU.begin(ACCEL);
 
     /* Start the PME (Pattern Matching Engine) */
     CuriePME.begin();
@@ -169,7 +169,7 @@ void readVectorFromIMU(byte vector[])
 
     /* While button is being held... */
     while (digitalRead(buttonPin) == HIGH) {
-        if (CurieIMU.accelDataReady()) {
+        if (CurieIMU.dataReady()) {
 
             CurieIMU.readAccelerometer(raw[0], raw[1], raw[2]);
 
