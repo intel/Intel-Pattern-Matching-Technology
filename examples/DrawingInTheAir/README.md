@@ -289,7 +289,7 @@ function allows you to define what "close enough" means.
 to your Arduino 101 (https://www.arduino.cc/en/tutorial/pushbutton), or a shield
 with a button built-in. I am using the Danger Shield from Sparkfun
 (https://www.sparkfun.com/products/11649), which includes a button connected
-to digital pin 10.
+to digital pin 12.
 
 Now, we're going to forget about the PME for just a few minutes. We just
 learned how to use the `learn()` and `classify()` functions, and you probably
