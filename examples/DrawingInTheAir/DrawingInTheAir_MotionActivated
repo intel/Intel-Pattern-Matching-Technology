@@ -8,8 +8,8 @@
  * PME. Once training is finished, you can keep drawing letters and the PME
  * will try to guess which letter you are drawing.
  *
- * The build in motion detection interrupt is being used to detect whether u are writing or not.
- * While drawing in the air, the buzzer is HIGH, so wait until the buzzer turns low after drawing a letter and repeat the cycle.
+ * The built in motion detection interrupt is being used to detect whether u are writing or not.
+ * While drawing in the air, the buzzer sounds, so wait until the buzzer turns off after drawing a letter and repeat the cycle.
  *
  * NOTE: For best results, draw big letters, at least 1-2 feet tall.
  *
@@ -30,8 +30,8 @@ const unsigned int trainingReps = 4;
 const unsigned char trainingStart = 'A';
 const unsigned char trainingEnd = 'D';
 
-/* The input pin used to signal when a letter is being drawn- you'll
- * need to make sure a button is attached to this pin */
+/* An optional buzzer or LED might be attached to a digital pin for feedback */
+ 
 const unsigned int buzzerPin = 4;
 
 /* Sample rate for accelerometer */
@@ -182,7 +182,7 @@ void readVectorFromIMU(byte vector[])
     /* Wait until Motion detection inturrupt flag  */
     while (motionFlag == false)
 {
-    digitalWrite(11, LOW);  // Optional Buzzer 
+    digitalWrite(buzzerPin, LOW);  // Optional Buzzer off
 }
     /* While Motion detection inturrupt flag being held... */
     while (motionFlag == true) {
@@ -206,7 +206,7 @@ void readVectorFromIMU(byte vector[])
             }
 
         }
-digitalWrite(11, HIGH);
+            digitalWrite(buzzerPin, HIGH);   // Optional buzzer rings
 
     }
 
