@@ -8,8 +8,8 @@
  * PME. Once training is finished, you can keep drawing letters and the PME
  * will try to guess which letter you are drawing.
  *
- * This example requires a button to be connected to digital pin 4
- * https://www.arduino.cc/en/Tutorial/Button
+ * The build in motion detection interrupt is being used to detect whether u are writing or not.
+ * While drawing in the air, the buzzer is HIGH, so wait until the buzzer turns low after drawing a letter and repeat the cycle.
  *
  * NOTE: For best results, draw big letters, at least 1-2 feet tall.
  *
@@ -32,7 +32,7 @@ const unsigned char trainingEnd = 'D';
 
 /* The input pin used to signal when a letter is being drawn- you'll
  * need to make sure a button is attached to this pin */
-const unsigned int buttonPin = 4;
+const unsigned int buzzerPin = 4;
 
 /* Sample rate for accelerometer */
 const unsigned int sampleRateHZ = 200;
@@ -52,15 +52,15 @@ const unsigned int sensorBufSize = 2048;
 const int IMULow = -32768;
 const int IMUHigh = 32767;
 
-boolean ledState = false;  // Motion Activation Flag 
+boolean motionFlag = false;  // Motion Activation Flag 
 
 void setup()
 {
     Serial.begin(9600);
     while(!Serial);
 
-    pinMode(buttonPin, INPUT);
-
+    pinMode(buzzerPin, OUTPUT);
+    digitalWrite(buzzerPin, LOW);
     /* Start the IMU (Intertial Measurement Unit) */
     CurieIMU.begin();
 CurieIMU.attachInterrupt(eventCallback);
@@ -81,11 +81,11 @@ CurieIMU.attachInterrupt(eventCallback);
 
     CurieIMU.setAccelerometerRate(sampleRateHZ);
     CurieIMU.setAccelerometerRange(2);
-pinMode(11, OUTPUT);
-digitalWrite(11, LOW);
+
+
     trainLetters();
     Serial.println("Training complete. Now, draw some letters (remember to ");
-    Serial.println("hold the button) and see if the PME can classify them.");
+    Serial.println(" Draw and see if the PME can classify them.");
 }
 
 void loop ()
@@ -180,12 +180,12 @@ void readVectorFromIMU(byte vector[])
     unsigned int i = 0;
 
     /* Wait until Motion detection inturrupt flag  */
-    while (ledState == false)
+    while (motionFlag == false)
 {
-    digitalWrite(11, LOW);  // Optional Beeper
+    digitalWrite(11, LOW);  // Optional Buzzer 
 }
     /* While Motion detection inturrupt flag being held... */
-    while (ledState == true) {
+    while (motionFlag == true) {
 
         if (CurieIMU.accelDataReady()) {
 
@@ -207,8 +207,7 @@ void readVectorFromIMU(byte vector[])
 
         }
 digitalWrite(11, HIGH);
-delay(50);
-digitalWrite(11, LOW);
+
     }
 
     undersample(accel, samples, vector);
@@ -249,28 +248,17 @@ void trainLetters()
 
 // MOTION DETECTION interrupt subroutine 
 
-// global variable motion flag
+
 
 
 static void eventCallback(void){
   if (CurieIMU.getInterruptStatus(CURIE_IMU_ZERO_MOTION)) {
-    ledState = false; 
+    motionFlag = false; 
    // Serial.println("zero motion detected...");
   }  
   if (CurieIMU.getInterruptStatus(CURIE_IMU_MOTION)) {
-    ledState = true;
-   /* if (CurieIMU.motionDetected(X_AXIS, POSITIVE))
-      Serial.println("Negative motion detected on X-axis");
-    if (CurieIMU.motionDetected(X_AXIS, NEGATIVE))
-      Serial.println("Positive motion detected on X-axis");
-    if (CurieIMU.motionDetected(Y_AXIS, POSITIVE))
-      Serial.println("Negative motion detected on Y-axis");
-    if (CurieIMU.motionDetected(Y_AXIS, NEGATIVE))
-      Serial.println("Positive motion detected on Y-axis");
-    if (CurieIMU.motionDetected(Z_AXIS, POSITIVE))
-      Serial.println("Negative motion detected on Z-axis");
-    if (CurieIMU.motionDetected(Z_AXIS, NEGATIVE))
-      Serial.println("Positive motion detected on Z-axis");*/
+    motionFlag = true;
+  
   }  
 }
 /*
