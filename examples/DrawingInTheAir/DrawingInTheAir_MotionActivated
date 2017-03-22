@@ -33,7 +33,7 @@ const unsigned char trainingEnd = 'D';
 
 /* An optional buzzer or LED might be attached to a digital pin for feedback */
  
-const unsigned int buzzerPin = 4;
+const unsigned int buzzerPin = 11;
 
 /* Sample rate for accelerometer */
 const unsigned int sampleRateHZ = 200;
