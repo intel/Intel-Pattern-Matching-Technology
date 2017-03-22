@@ -1,6 +1,7 @@
 /*
  * This example demonstrates using the pattern matching engine (CuriePME)
  * to classify streams of accelerometer data from CurieIMU.
+ *** ENHANCEMENT: Automatic data capture with build in MOTION DETECTION functionality, no need of button or any extra input hardware.
  *
  * First, the sketch will prompt you to draw some letters in the air (just
  * imagine you are writing on an invisible whiteboard, using your board as the
@@ -63,12 +64,12 @@ void setup()
     digitalWrite(buzzerPin, LOW);
     /* Start the IMU (Intertial Measurement Unit) */
     CurieIMU.begin();
-CurieIMU.attachInterrupt(eventCallback);
+    CurieIMU.attachInterrupt(eventCallback);
 
   /* Enable Zero Motion Detection */
-  CurieIMU.setDetectionThreshold(CURIE_IMU_ZERO_MOTION, 50);  // 50mg
-  CurieIMU.setDetectionDuration(CURIE_IMU_ZERO_MOTION, 2);    // 2s
-  CurieIMU.interrupts(CURIE_IMU_ZERO_MOTION);
+    CurieIMU.setDetectionThreshold(CURIE_IMU_ZERO_MOTION, 50);  // 50mg
+    CurieIMU.setDetectionDuration(CURIE_IMU_ZERO_MOTION, 2);    // 2s
+    CurieIMU.interrupts(CURIE_IMU_ZERO_MOTION);
 
   /* Enable Motion Detection */
   CurieIMU.setDetectionThreshold(CURIE_IMU_MOTION, 20);      // 20mg
@@ -234,9 +235,9 @@ void trainLetter(char letter, unsigned int repeat)
 void trainLetters()
 {
     for (char i = trainingStart; i <= trainingEnd; ++i) {
-        Serial.print("Initiate Motion and draw the letter '");
-        Serial.print(String(i) + "' in the air. Here is no button, CURIE ZERO MOTION DETECTION activation automatically after drawing the letter ");
-        Serial.println("as you are done.");
+        Serial.print(" Draw the letter in Air while the buzzer rings'");
+        Serial.print(String(i) + "' Detecting a motion automatically initiate data capture and the optional buzzer rings ");
+        Serial.println("while you are done.");
 
         trainLetter(i, trainingReps);
         Serial.println("OK, finished with this letter.");
