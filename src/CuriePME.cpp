@@ -116,8 +116,12 @@ uint16_t Intel_PMT::classify(uint8_t *pattern_vector, int32_t vector_length)
 	}
 	regWrite16( LCOMP , current_vector[vector_length - 1] );
 
-	return  ( regRead16(CAT) & CAT_CATEGORY);
+	// Sort matching categories by (We don't care about the returned value here;
+	// reading the distance register sorts matched categories by distance)
+	regRead16(IDX_DIST);
 
+	// Return the category with the lowest distance to point
+	return  (regRead16(CAT) & CAT_CATEGORY);
 }
 
 // write vector is used for kNN recognition and does not alter
