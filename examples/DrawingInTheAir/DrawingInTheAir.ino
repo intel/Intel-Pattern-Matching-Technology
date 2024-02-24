@@ -109,7 +109,7 @@ byte getAverageSample(byte samples[], unsigned int num, unsigned int pos,
         ret = 0;
         pos -= (step * 3);
         for (unsigned int i = 0; i < size; ++i) {
-            ret += samples[pos - (3 * i)];
+            ret += samples[pos + (3 * i)];
         }
 
         ret /= size;
